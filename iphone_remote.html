@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Kynext iOS">
+  <title>Kynext — Télécommande iPhone</title>
+  <link href="/argent_ui.css" rel="stylesheet">
+  <style>
+    body { font-family: Inter, "Segoe UI", Arial, sans-serif; background: #050507; color: #fff; -webkit-tap-highlight-color: transparent; overscroll-behavior: none; }
+    .glass { background: rgba(20, 20, 26, 0.82); backdrop-filter: blur(16px); border: 1px solid rgba(255,255,255,0.08); }
+    .gold-grad { background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%); color: #09090b; }
+    .em-grad { background: linear-gradient(135deg, #34d399 0%, #10b981 100%); color: #052e16; }
+  </style>
+</head>
+
+<body class="phone-root min-h-screen flex flex-col justify-between p-3.5 select-none">
+  <div id="pairingGate" class="fixed inset-0 z-[100] flex items-center justify-center bg-zinc-950/95 p-5">
+    <div class="glass w-full max-w-sm rounded-3xl p-6 space-y-4 text-center">
+      <svg width="36" height="36" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg" class="mx-auto shrink-0" aria-hidden="true" focusable="false">
+        <rect width="36" height="36" rx="10" fill="url(#gradKPair)" />
+        <path d="M11 10V26M23 10L16 18L23 26M16 18H25" stroke="#09090b" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" />
+        <defs><linearGradient id="gradKPair" x1="0" y1="0" x2="36" y2="36" gradientUnits="userSpaceOnUse"><stop stop-color="#fbbf24" /><stop offset="1" stop-color="#34d399" /></linearGradient></defs>
+      </svg>
+      <h1 class="text-xl font-extrabold">Jumeler Kynext</h1>
+      <p class="text-sm text-zinc-300">Saisis le code temporaire affiché dans le cockpit de ton PC. Utilise uniquement un réseau Wi-Fi privé et de confiance.</p>
+      <input id="pairCodeInput" type="text" inputmode="numeric" autocomplete="one-time-code" maxlength="6" placeholder="Code à 6 chiffres" class="w-full bg-black/50 border border-white/15 rounded-xl px-4 py-3 text-center text-xl tracking-[0.4em] text-white">
+      <button id="pairButton" onclick="pairPhone()" class="w-full gold-grad font-extrabold py-3 rounded-xl">Connecter l’iPhone</button>
+      <p id="pairMessage" class="text-xs text-rose-300 min-h-5" role="status"></p>
+    </div>
+  </div>
+
+  <!-- BARRE SUPÉRIEURE : CONNEXION + WAKE LOCK + AUTO-CHAIN -->
+  <header class="glass rounded-2xl px-3.5 py-2.5 flex flex-wrap items-center justify-between gap-2">
+    <div class="flex items-center gap-2">
+      <svg width="36" height="36" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg" class="shrink-0" aria-hidden="true" focusable="false">
+        <rect width="36" height="36" rx="10" fill="url(#gradK)" />
+        <path d="M11 10V26M23 10L16 18L23 26M16 18H25" stroke="#09090b" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" />
+        <defs><linearGradient id="gradK" x1="0" y1="0" x2="36" y2="36" gradientUnits="userSpaceOnUse"><stop stop-color="#fbbf24" /><stop offset="1" stop-color="#34d399" /></linearGradient></defs>
+      </svg>
+      <span id="connDot" class="h-2.5 w-2.5 rounded-full bg-emerald-400 animate-ping"></span>
+      <div>
+        <div class="flex items-center gap-1.5"><strong class="font-extrabold text-[11px] tracking-wide text-white">Kynext</strong><span class="text-[10px] font-bold uppercase tracking-wide text-emerald-400">Live Sync PC</span></div>
+        <div id="callTimer" class="text-[10px] text-zinc-400 font-mono">Prêt • Anti-veille actif</div>
+      </div>
+    </div>
+    <div class="flex items-center gap-3">
+      <label class="flex items-center gap-1 text-[10px] text-sky-300 font-bold">
+        <input id="autoChain" type="checkbox" checked class="accent-sky-400 h-3.5 w-3.5"> Auto-Suivant
+      </label>
+      <label class="flex items-center gap-1 text-[10px] text-amber-300 font-bold">
+        <input id="autoTrigger" type="checkbox" class="accent-amber-400 h-3.5 w-3.5"> Auto-Clic PC
+      </label>
+    </div>
+  </header>
+
+  <!-- CARTE ENTREPRISE (SWIPE GAUCHE / DROITE SUPPORTÉ) -->
+  <main id="swipeZone" class="my-3 flex-1 flex flex-col justify-between space-y-3">
+    <div class="glass rounded-3xl p-4 space-y-2.5 relative overflow-hidden">
+      <div class="flex justify-between items-center">
+        <span id="mobMetier" class="text-[10px] font-extrabold uppercase px-2.5 py-0.5 rounded-full bg-amber-400/15 text-amber-300 border border-amber-400/30">Métier</span>
+        <span id="mobStatus" class="text-[11px] font-bold text-zinc-300 bg-white/5 px-2.5 py-0.5 rounded-full">À contacter</span>
+      </div>
+      <h1 id="mobNom" class="text-xl font-extrabold text-white leading-snug">Sélectionne un artisan...</h1>
+      <p id="mobVille" class="text-xs text-zinc-400">—</p>
+      <div class="flex items-center justify-between pt-1 border-t border-white/10">
+        <span id="mobTelBig" class="text-lg font-black text-emerald-400">Aucun numéro</span>
+        <a id="mobSiteBtn" href="#" target="_blank" rel="noopener noreferrer" class="text-[11px] font-bold text-amber-300 underline">👁️ Voir sa maquette</a>
+      </div>
+
+      <!-- TÉLÉPROMPTEUR PITCH INTÉGRÉ SUR L IPHONE -->
+      <details class="bg-black/40 border border-white/5 rounded-xl p-2.5 text-xs text-zinc-300">
+        <summary class="font-bold text-amber-400 cursor-pointer">🎙️ Afficher le Pitch Téléphone & Objections</summary>
+        <p id="mobPitch" class="mt-2 text-[11px] leading-relaxed italic text-zinc-200"></p>
+        <div class="mt-2 pt-2 border-t border-white/10 text-[10px] text-emerald-300 space-y-1">
+          <div>• <strong>Prix de départ :</strong> <span id="mobPrice">790 € HT indicatifs</span>, à confirmer dans le devis</div>
+          <div>• <strong>Paiement :</strong> modalités à convenir et préciser dans le devis</div>
+          <div>• <strong>Contenu :</strong> maquette à personnaliser après validation par l’entreprise</div>
+        </div>
+      </details>
+    </div>
+
+    <!-- SÉLECTEUR RAPIDE DE SCÉNARIO WHATSAPP / SMS DEPUIS L IPHONE -->
+    <div class="flex gap-1.5 overflow-x-auto pb-1">
+      <button onclick="setScenarioFromPhone('v1')" class="shrink-0 bg-zinc-900 border border-white/10 text-[11px] font-bold px-3 py-1.5 rounded-xl text-amber-300">✨ 1er Contact</button>
+      <button onclick="setScenarioFromPhone('j3')" class="shrink-0 bg-zinc-900 border border-white/10 text-[11px] font-bold px-3 py-1.5 rounded-xl text-zinc-300">🔁 Relance J+3</button>
+      <button onclick="setScenarioFromPhone('tarif')" class="shrink-0 bg-zinc-900 border border-white/10 text-[11px] font-bold px-3 py-1.5 rounded-xl text-zinc-300">💶 Prix indicatif</button>
+      <button onclick="setScenarioFromPhone('2x')" class="shrink-0 bg-zinc-900 border border-white/10 text-[11px] font-bold px-3 py-1.5 rounded-xl text-zinc-300">💳 Paiement fractionné</button>
+      <button onclick="setScenarioFromPhone('fb')" class="shrink-0 bg-zinc-900 border border-white/10 text-[11px] font-bold px-3 py-1.5 rounded-xl text-zinc-300">📱 Vs Facebook</button>
+    </div>
+
+    
+    <!-- PONT GEMINI IA SUR IPHONE + FICHE CONTACT VCF -->
+    <div class="glass rounded-2xl p-3 space-y-2 border border-purple-500/30">
+      <div class="flex justify-between items-center">
+        <span class="text-[10px] font-extrabold uppercase tracking-wider text-purple-300">✨ Assistant Gemini iPhone & Contact</span>
+        <button id="btnVcard" type="button" onclick="downloadVcard()" class="bg-zinc-800 border border-white/10 text-[10px] font-bold px-2.5 py-1 rounded-lg text-emerald-300">📇 +Contact iOS</button>
+      </div>
+      <div class="grid grid-cols-2 gap-1.5">
+        <button onclick="askGeminiPhone('objection')" class="bg-gradient-to-r from-purple-600 to-indigo-600 active:scale-95 text-white font-extrabold py-2.5 rounded-xl text-[11px] shadow">✨ Gemini : Répondre</button>
+        <button onclick="askGeminiPhone('audit')" class="bg-zinc-900 border border-purple-400/30 active:scale-95 text-purple-200 font-bold py-2.5 rounded-xl text-[11px]">🎙️ Gemini : Pitch Live</button>
+      </div>
+    </div>
+
+    <!-- 3 BOUTONS D ACTION PRINCIPAUX -->
+    <div class="grid grid-cols-2 gap-2.5">
+      <p id="contactSuppressionStatus" class="hidden col-span-2 text-center text-xs font-bold text-rose-200 bg-rose-500/15 border border-rose-400/30 rounded-xl py-3">Contact bloqué — ne pas appeler, écrire ou préparer un paiement.</p>
+      <a id="btnCall" onclick="startLocalCallTimer()" href="#" class="col-span-2 bg-gradient-to-r from-indigo-600 to-blue-600 active:scale-95 text-white font-extrabold text-center py-4 rounded-2xl shadow-lg text-base">📞 APPELER L'ARTISAN</a>
+      <a id="btnWa" href="#" target="_blank" rel="noopener noreferrer" class="em-grad active:scale-95 font-extrabold text-center py-3.5 rounded-2xl shadow-lg text-xs">💬 WHATSAPP</a>
+      <a id="btnSms" href="#" class="gold-grad active:scale-95 font-extrabold text-center py-3.5 rounded-2xl shadow-lg text-xs">✉️ SMS IPHONE</a>
+    </div>
+
+    <!-- ENVOI DE LIENS DE PAIEMENT EN 1 TAP DEPUIS L IPHONE -->
+    <div class="glass rounded-2xl p-2.5 space-y-1.5">
+      <div class="text-[10px] font-bold uppercase text-zinc-400 text-center">💳 Envoyer Lien de Paiement WhatsApp en direct</div>
+      <div class="grid grid-cols-3 gap-1.5">
+        <button onclick="sendPayFromPhone('deposit', 'Acompte 30%')" class="bg-sky-500/20 border border-sky-400/30 text-sky-200 text-[11px] font-extrabold py-2 rounded-xl">Acompte 30%</button>
+        <button onclick="sendPayFromPhone('half', 'Première échéance')" class="bg-amber-500/20 border border-amber-400/30 text-amber-200 text-[11px] font-extrabold py-2 rounded-xl">Première échéance</button>
+        <button onclick="sendPayFromPhone('total', 'Montant total')" class="bg-emerald-500/20 border border-emerald-400/30 text-emerald-200 text-[11px] font-extrabold py-2 rounded-xl">Total indicatif</button>
+      </div>
+    </div>
+
+    <!-- DICTÉE VOCALE SIRI -> NOTES PC + QUALIFICATION 1-TAP -->
+    <div class="glass rounded-2xl p-3 space-y-2">
+      <div class="flex gap-1.5">
+        <input id="quickNote" type="text" placeholder="🎙️ Touche le clavier puis le micro Siri..." class="flex-1 bg-black/60 border border-white/10 rounded-xl px-3 py-2 text-xs text-white outline-none">
+        <button onclick="sendNoteToPc()" class="bg-amber-400 text-zinc-950 font-extrabold text-xs px-3.5 rounded-xl">Noter</button>
+      </div>
+      <div class="grid grid-cols-4 gap-1.5">
+        <button onclick="qualifyFromPhone('Répondeur', 'sent')" class="bg-zinc-800 active:bg-zinc-700 text-[11px] font-bold py-2.5 rounded-xl">📼 Répond.</button>
+        <button onclick="qualifyFromPhone('À rappeler', 'sent')" class="bg-amber-500/20 text-amber-300 border border-amber-500/30 text-[11px] font-bold py-2.5 rounded-xl">⏰ Rappel</button>
+        <button onclick="qualifyFromPhone('Très intéressé', 'hot')" class="bg-sky-500/20 text-sky-300 border border-sky-500/30 text-[11px] font-bold py-2.5 rounded-xl">🔥 Chaud</button>
+        <button onclick="qualifyFromPhone('Vente conclue', 'sold')" class="bg-emerald-500/25 text-emerald-300 border border-emerald-500/40 text-[11px] font-extrabold py-2.5 rounded-xl">✅ Vendu</button>
+      </div>
+    </div>
+  </main>
+
+  <!-- NAVIGATION BASSE -->
+  <footer class="grid grid-cols-3 gap-2">
+    <button onclick="remoteNav(-1)" class="glass active:bg-white/10 py-3 rounded-2xl font-bold text-xs">◀ Préc.</button>
+    <button onclick="remoteNextWithPhone()" class="bg-indigo-600/30 border border-indigo-400/40 text-indigo-200 active:bg-indigo-600/50 py-3 rounded-2xl font-extrabold text-xs">📞 Suiv. avec N°</button>
+    <button onclick="remoteNav(1)" class="glass active:bg-white/10 py-3 rounded-2xl font-bold text-xs">Suiv. ▶</button>
+  </footer>
+
+  <script>
+    var TOKEN_KEY = "argent_api_token";
+    var currentSiren = "";
+    var currentBridge = {};
+    function toIntlPhone(value) {
+      var digits = String(value || "").replace(/\D/g, "");
+      if (digits.startsWith("0033")) return digits.slice(2);
+      if (digits.startsWith("33")) return digits;
+      return digits.startsWith("0") ? "33" + digits.slice(1) : digits;
+    }
+    function getBridgeToken() { try { return localStorage.getItem(TOKEN_KEY) || ""; } catch (e) { return ""; } }
+    function showPairing(message) {
+      document.getElementById("pairingGate").classList.remove("hidden");
+      document.getElementById("pairMessage").innerText = message || "";
+    }
+    async function pairPhone() {
+      var button = document.getElementById("pairButton");
+      var code = document.getElementById("pairCodeInput").value.replace(/\D/g, "");
+      if (code.length !== 6) return showPairing("Le code doit contenir 6 chiffres.");
+      button.disabled = true;
+      try {
+        var response = await fetch("/api/pair", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ code: code }) });
+        var result = await response.json();
+        if (!response.ok || !result.token) throw new Error(result.error || "Code refusé");
+        localStorage.setItem(TOKEN_KEY, result.token);
+        document.getElementById("pairingGate").classList.add("hidden");
+        document.getElementById("pairCodeInput").value = "";
+        await pollBridge();
+      } catch (error) { showPairing(error.message || "Connexion impossible"); }
+      finally { button.disabled = false; }
+    }
+    async function bridgeFetch(url, options) {
+      options = options || {};
+      options.headers = Object.assign({}, options.headers || {}, { "X-Argent-Token": getBridgeToken() });
+      var response = await fetch(url, options);
+      if (response.status === 401) { localStorage.removeItem(TOKEN_KEY); showPairing("La connexion a expiré. Saisis un nouveau code."); }
+      return response;
+    }
+    async function downloadVcard() {
+      if (!currentBridge.siren) return;
+      try {
+        var response = await bridgeFetch("/api/vcard?siren=" + encodeURIComponent(currentBridge.siren));
+        if (!response.ok) throw new Error("Téléchargement impossible");
+        var fileUrl = URL.createObjectURL(await response.blob());
+        var link = document.createElement("a"); link.href = fileUrl; link.download = "contact_" + currentBridge.siren + ".vcf"; link.click();
+        setTimeout(function(){ URL.revokeObjectURL(fileUrl); }, 3000);
+      } catch (error) { alert(error.message || "Téléchargement impossible"); }
+    }
+    var lastActionId = 0;
+    var callSec = 0;
+    var callInterval = null;
+
+    // Active l anti-veille sur iOS Safari (WakeLock)
+    async function enableWakeLock() {
+      try { if ("wakeLock" in navigator) await navigator.wakeLock.request("screen"); } catch (e) {}
+    }
+    document.addEventListener("click", enableWakeLock, { once: true });
+
+    function startLocalCallTimer() {
+      if (currentBridge && currentBridge.doNotContact === true) return;
+      clearInterval(callInterval);
+      callSec = 0;
+      callInterval = setInterval(function() {
+        callSec++;
+        var m = String(Math.floor(callSec / 60)).padStart(2, "0");
+        var s = String(callSec % 60).padStart(2, "0");
+        document.getElementById("callTimer").innerText = "📞 En appel : " + m + ":" + s;
+      }, 1000);
+    }
+
+    async function pollBridge() {
+      try {
+        if (!getBridgeToken()) return showPairing();
+        var r = await bridgeFetch("/api/bridge");
+        if (!r.ok) return;
+        var b = await r.json();
+        if (b && b.siren) {
+          currentBridge = b;
+          document.getElementById("mobNom").innerText = b.nom || "—";
+          document.getElementById("mobVille").innerText = (b.dirigeant ? "👤 " + b.dirigeant + " • " : "") + "📍 " + (b.ville || "");
+          document.getElementById("mobMetier").innerText = b.metier || "Artisan";
+          document.getElementById("mobStatus").innerText = b.statusLabel || "À contacter";
+          document.getElementById("mobPrice").innerText = (b.price || 790) + " € HT indicatifs";
+          document.getElementById("mobTelBig").innerText = b.tel || "Aucun numéro";
+          document.getElementById("mobSiteBtn").href = b.urlPublique || "#";
+          document.getElementById("mobPitch").innerText = "Bonjour, je peux vous présenter une maquette de site pour " + b.nom + ". Si vous le souhaitez, nous pouvons en discuter et recueillir votre avis.";
+
+          var blocked = b.doNotContact === true;
+          document.getElementById("contactSuppressionStatus").classList.toggle("hidden", !blocked);
+          var cleanTel = blocked ? "" : (b.tel || "").replace(/\s+/g, "");
+          var intlTel = toIntlPhone(cleanTel);
+          var msg = blocked ? "" : (b.message || "");
+
+          document.getElementById("btnCall").href = cleanTel ? ("tel:" + cleanTel) : "#";
+          document.getElementById("btnWa").href = cleanTel && b.isMobile === true && !blocked ? ("https://wa.me/" + intlTel + "?text=" + encodeURIComponent(msg)) : "#";
+          document.getElementById("btnSms").href = cleanTel ? ("sms:" + cleanTel + "&body=" + encodeURIComponent(msg)) : "#";
+
+          if (b.siren !== currentSiren) {
+            currentSiren = b.siren;
+            if (navigator.vibrate) navigator.vibrate(35);
+          }
+
+          if (b.actionId && b.actionId !== lastActionId) {
+            lastActionId = b.actionId;
+            if (document.getElementById("autoTrigger").checked && cleanTel) {
+              if (b.actionType === "call") window.location.href = "tel:" + cleanTel;
+              if (b.actionType === "wa" && b.isMobile === true) window.location.href = "https://wa.me/" + intlTel + "?text=" + encodeURIComponent(msg);
+              if (b.actionType === "sms") window.location.href = "sms:" + cleanTel + "&body=" + encodeURIComponent(msg);
+            }
+          }
+        }
+      } catch (e) {}
+    }
+
+    
+    function askGeminiPhone(mode) {
+      var b = currentBridge || {};
+      var promptIa = "";
+      if (mode === "objection") {
+        var obj = prompt("Que vient de te répondre l'artisan ? (ex: trop cher, j'ai pas le temps, rappelle le mois prochain)", "C'est trop cher pour moi en ce moment");
+        if (!obj) return;
+        promptIa = "Aide-moi à préparer une réponse professionnelle à cette objection : \"" + obj + "\". Société : " + (b.nom || "Artisan") + " (" + (b.metier || "") + " à " + (b.ville || "") + "). Prix de départ indicatif : " + (b.price || 790) + " € HT, à confirmer dans le devis. Aperçu : " + (b.urlPublique || "") + ". Propose deux réponses courtes et respectueuses, sans pression.";
+      } else {
+        promptIa = "Joue le rôle du dirigeant de cette entreprise (" + (b.metier || "") + " à " + (b.ville || "") + "). Je propose une maquette de site avec un prix de départ indicatif de " + (b.price || 790) + " € HT à confirmer dans le devis (" + (b.urlPublique || "") + "). Fais un jeu de rôle réaliste, courtois et sans pression, puis donne-moi un retour constructif.";
+      }
+      if (!navigator.clipboard || !navigator.clipboard.writeText) return prompt("Copie ce prompt pour Gemini :", promptIa);
+      navigator.clipboard.writeText(promptIa).then(function() {
+        alert("✓ Contexte de " + (b.nom || "l'artisan") + " copié ! L'application Gemini va s'ouvrir : fais simplement COLLER dans Gemini.");
+        window.location.href = "https://gemini.google.com/app";
+      }).catch(function() {
+        prompt("Copie ce prompt pour Gemini :", promptIa);
+      });
+    }
+  
+    function sendPayFromPhone(mode, label) {
+      if (currentBridge && currentBridge.doNotContact === true) return alert("Contact bloqué par la liste de suppression.");
+      if (!currentBridge || currentBridge.isMobile !== true) return alert("WhatsApp nécessite un mobile professionnel 06/07 vérifié.");
+      var cleanTel = (currentBridge.tel || "").replace(/\s+/g, "");
+      if (!cleanTel) return alert("Pas de numéro sur cette fiche");
+      var total = Number(currentBridge.price); if (total !== 980) total = 790;
+      var amount = mode === "deposit" ? Math.round(total * 0.3) : (mode === "half" ? Math.round(total / 2) : total);
+      var intlTel = toIntlPhone(cleanTel), popup = window.open("about:blank", "_blank");
+      if (!popup) return alert("Autorise les fenêtres contextuelles pour préparer le brouillon.");
+      bridgeFetch("/api/payment-link", {
+        method: "POST", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ siren: currentBridge.siren, amount: amount, purpose: mode === "deposit" ? "deposit" : (mode === "half" ? "installment" : "total") })
+      }).then(function(response) {
+        return response.json().then(function(result) {
+          if (!response.ok || !result.ok) throw new Error(result.error || "Lien de paiement indisponible.");
+          var txt = "Bonjour, voici le brouillon du lien de paiement pour " + label + " : " + amount + " € indicatifs (à confirmer dans le devis) pour " + currentBridge.nom + " : " + result.paymentLinkUrl;
+          popup.location.href = "https://wa.me/" + intlTel + "?text=" + encodeURIComponent(txt);
+        });
+      }).catch(function(error) {
+        popup.close();
+        alert(error.message || "Lien de paiement indisponible.");
+      });
+    }
+
+    async function setScenarioFromPhone(sc) {
+      await bridgeFetch("/api/bridge-cmd", {
+        method: "POST", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ cmd: "scenario", value: sc })
+      });
+      setTimeout(pollBridge, 250);
+    }
+
+    async function sendNoteToPc() {
+      var inp = document.getElementById("quickNote");
+      if (!inp.value.trim()) return;
+      await bridgeFetch("/api/bridge-cmd", {
+        method: "POST", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ cmd: "note", note: inp.value.trim() })
+      });
+      inp.value = "";
+    }
+
+    async function qualifyFromPhone(note, status) {
+      var autoNext = document.getElementById("autoChain").checked;
+      await bridgeFetch("/api/bridge-cmd", {
+        method: "POST", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ cmd: "qualify", note: note, status: status, autoNext: autoNext })
+      });
+    }
+
+    async function remoteNav(dir) {
+      await bridgeFetch("/api/bridge-cmd", {
+        method: "POST", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ cmd: "nav", dir: dir })
+      });
+    }
+
+    async function remoteNextWithPhone() {
+      await bridgeFetch("/api/bridge-cmd", {
+        method: "POST", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ cmd: "next_phone" })
+      });
+    }
+
+    // Gestes tactiles Swipe Gauche / Droite pour changer de fiche
+    var touchStartX = 0;
+    var zone = document.getElementById("swipeZone");
+    zone.addEventListener("touchstart", function(e) { touchStartX = e.changedTouches[0].screenX; }, { passive: true });
+    zone.addEventListener("touchend", function(e) {
+      var diff = e.changedTouches[0].screenX - touchStartX;
+      if (Math.abs(diff) > 75) { remoteNav(diff < 0 ? 1 : -1); }
+    }, { passive: true });
+
+    
+    setInterval(pollBridge, 1200);
+    if (getBridgeToken()) document.getElementById("pairingGate").classList.add("hidden");
+    else showPairing();
+    pollBridge();
+  </script>
+</body>
+</html>

@@ -1,0 +1,13 @@
+node_modules/
+/data.js
+/data/
+/dossiers_clients/
+/sites/
+/generated/
+/backups/
+/ARGENT_Cockpit.exe
+*.log
+*.tmp
+.env
+.env.*
+!.env.example

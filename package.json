@@ -1,0 +1,19 @@
+{
+  "name": "kynext-local-cockpit",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Cockpit CRM local Kynext",
+  "scripts": {
+    "start": "node server_argent.js",
+    "test": "node --test",
+    "hunter": "node auto_hunter.js",
+    "restore-crm": "node restore_crm_snapshot.js",
+    "build:css": "tailwindcss --config tailwind.config.js --input argent_ui.src.css --output argent_ui.css --minify"
+  },
+  "dependencies": {
+    "qrious": "4.0.2"
+  },
+  "devDependencies": {
+    "tailwindcss": "3.4.17"
+  }
+}
