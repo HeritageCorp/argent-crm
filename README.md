@@ -41,6 +41,7 @@ Les connexions iPhone sont limitées aux adresses IPv4 privées du même sous-r�
 - Avant publication, vérifie les mentions légales, assurances, certifications, photos, services et tarifs avec l’entreprise. Les contenus génériques de FAQ ne remplacent pas ses réponses validées.
 - Le cockpit prend en charge `/` ou `Ctrl+K` pour la recherche, `↑`/`↓` pour parcourir les fiches, `1`/`2`/`3` pour changer d’onglet et `?` pour afficher l’aide.
 - Le pitch d’appel est personnalisé avec le dirigeant, le métier et la ville. Le sélecteur de messages propose des réponses sobres aux objections (budget, temps, utilité, site existant) et une clôture explicite des relances ; ces textes restent des brouillons à envoyer manuellement.
+- Le sélecteur propose aussi un message de reprise de contact à trois mois, formulé sans pression et avec une option explicite d’arrêt. Il ne planifie ni n’envoie rien automatiquement et reste soumis à la liste « Ne plus contacter ».
 - Le bouton « Pipeline » ouvre une vue Kanban des fiches correspondant aux filtres actifs. Les déplacer entre les colonnes met à jour leur statut CRM et l’enregistre localement, comme le sélecteur de statut de la fiche.
 - « Note rapide » ajoute une note horodatée à la fiche sélectionnée, sans quitter sa vue. Les notes sont enregistrées avec l’état CRM local.
 - Une fiche n’est publiée que si « Autoriser la publication de cette fiche » est cochée dans l’onglet Livrables. Les nouvelles fiches sont privées par défaut ; vérifie les textes, coordonnées et autorisations avant toute publication publique.
@@ -59,7 +60,15 @@ Les connexions iPhone sont limitées aux adresses IPv4 privées du même sous-r�
 
 ## Maintenance
 
-`server_argent.js` est la source principale du serveur et du générateur de cockpit. Les anciens scripts `setup_iphone_bridge.js`, `upgrade_iphone_v2.js`, `upgrade_gemini_iphone.js` et `fix_status_bug.js` sont des scripts de migration ponctuels ; ne les relance pas sur cette version.
+### Bibliothèques locales
+
+Les bibliothèques d’interface et d’export utilisées par le cockpit sont figées dans `libs/` et servies par le serveur local : Fuse.js (recherche tolérante), Day.js (dates), Toastify (notifications), Flatpickr (dates), Chart.js (graphiques), PapaParse (CSV), FileSaver/JSZip (exports) et Cleave.js (saisie). Elles sont chargées localement, sans CDN requis au runtime. Les modules qui ne sont pas encore branchés à un écran métier restent volontairement disponibles mais inactifs.
+
+### FreeLLMAPI et GitHub Copilot
+
+Le dépôt FreeLLMAPI est copié dans `freellmapi/` comme composant séparé. Il expose une API OpenAI-compatible sur `/v1`; Kynext reste sur son port 3001 et FreeLLMAPI doit utiliser le port 3002. Le modèle `auto` peut ensuite être ajouté à GitHub Copilot CLI avec `scripts/configure-freellmapi-copilot.ps1`. Le script écrit dans le profil Copilot de l’utilisateur, conserve les autres fournisseurs et ne versionne aucune clé. Il faut fournir la clé unifiée créée dans le tableau de bord FreeLLMAPI.
+
+`server_argent.js` est la source principale du serveur et du générateur de cockpit. Les anciens scripts de migration sont archivés dans `archive/migrations/` ; ne les relance pas sur cette version. Les outils d’enrichissement historiques sont rangés dans `tools/enrichment/`.
 `finance_reporting.js` contient la logique locale de journalisation et de reporting ; ses règles sont couvertes par `finance_reporting.test.js`.
 `sales_playbook.js` contient les modèles locaux de pitch et de réponses aux objections ; ses textes sont couverts par `sales_playbook.test.js`.
 Les états CRM distincts sont archivés dans `backups` avant leur écriture et à l’arrêt gracieux du serveur. Seuls les 50 derniers snapshots distincts sont conservés; ils restent des fichiers JSON non chiffrés. `data.js`, les dossiers CRM, les maquettes, les sauvegardes et les fichiers générés sont exclus de Git pour ne pas versionner les données d’entreprise ou les artefacts locaux.

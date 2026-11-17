@@ -36,7 +36,16 @@
     return greeting + ' ' + (messages[type] || messages.no_followup);
   }
 
-  const api = { buildCallPitch, buildObjectionMessage };
+  function buildGentleFollowUp(prospect = {}) {
+    const person = firstName(prospect);
+    const greeting = 'Bonjour' + (person ? ' ' + person : '') + ',';
+    const company = clean(prospect.nom, 160) || 'votre entreprise';
+    return greeting + ' je voulais simplement prendre de vos nouvelles et savoir comment se passe l’activité de ' +
+      company + '. Si le sujet de votre présence en ligne est toujours d’actualité, nous pouvons en reparler quand vous le souhaitez. ' +
+      'Sinon, dites-le-moi et je ne vous relancerai plus à ce sujet.';
+  }
+
+  const api = { buildCallPitch, buildObjectionMessage, buildGentleFollowUp };
   if (typeof module !== 'undefined' && module.exports) module.exports = api;
   root.KynextPlaybook = api;
 })(typeof window !== 'undefined' ? window : globalThis);

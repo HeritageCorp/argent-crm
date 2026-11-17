@@ -5,9 +5,12 @@ node_modules/
 /sites/
 /generated/
 /backups/
+/freellmapi/
 /ARGENT_Cockpit.exe
 *.log
 *.tmp
 .env
 .env.*
 !.env.example
+/.copilot/
+providers.json

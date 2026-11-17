@@ -1,0 +1,19 @@
+{
+  "providers": [
+    {
+      "name": "freellmapi",
+      "type": "openai",
+      "baseUrl": "http://127.0.0.1:3002/v1",
+      "apiKey": "freellmapi-REMPLACER_PAR_VOTRE_CLE"
+    }
+  ],
+  "models": [
+    {
+      "id": "auto",
+      "provider": "freellmapi",
+      "wireModel": "auto",
+      "maxPromptTokens": 32000,
+      "maxOutputTokens": 4096
+    }
+  ]
+}

@@ -1,6 +1,6 @@
 const test = require('node:test');
 const assert = require('node:assert/strict');
-const { buildCallPitch, buildObjectionMessage } = require('./sales_playbook');
+const { buildCallPitch, buildObjectionMessage, buildGentleFollowUp } = require('./sales_playbook');
 
 test('builds a concise call pitch personalized with company, director, trade, and city', () => {
   const pitch = buildCallPitch({
@@ -20,4 +20,12 @@ test('provides respectful objection replies and an explicit no-follow-up message
   assert.match(buildObjectionMessage('time', prospect), /créneau précis/);
   assert.match(buildObjectionMessage('usefulness', prospect), /Atelier Nord/);
   assert.match(buildObjectionMessage('no_followup', prospect), /ne vous relancerai plus/);
+});
+
+test('builds a low-pressure follow-up that explicitly allows ending contact', () => {
+  const message = buildGentleFollowUp({ nom: 'Atelier Nord', dirigeant: 'Camille Martin' });
+  assert.match(message, /Bonjour Camille/);
+  assert.match(message, /Atelier Nord/);
+  assert.match(message, /quand vous le souhaitez/);
+  assert.match(message, /je ne vous relancerai plus/);
 });

@@ -1,12 +1,22 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="fr">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>Kynext — Studio Executive</title>
+  <title>Kynext Studio Executive</title>
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 36 36%27%3E%3Cdefs%3E%3ClinearGradient id=%27g%27 x1=%270%27 y1=%270%27 x2=%2736%27 y2=%2736%27 gradientUnits=%27userSpaceOnUse%27%3E%3Cstop stop-color=%27%23fbbf24%27/%3E%3Cstop offset=%271%27 stop-color=%27%2334d399%27/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width=%2736%27 height=%2736%27 rx=%2710%27 fill=%27url(%23g)%27/%3E%3Cpath d=%27M11 10v16m12-16-7 8 7 8m-7-8h9%27 stroke=%27%2309090b%27 stroke-width=%273%27 stroke-linecap=%27round%27 stroke-linejoin=%27round%27/%3E%3C/svg%3E">
   <link href="/argent_ui.css" rel="stylesheet">
+  <link href="/libs/flatpickr.min.css" rel="stylesheet">
   <script src="/qrious.js"></script>
+  <script src="/libs/fuse.min.js"></script>
+  <script src="/libs/dayjs.min.js"></script>
+  <script src="/libs/toastify-js.js"></script>
+  <script src="/libs/flatpickr.min.js"></script>
+  <script src="/libs/chart.umd.min.js"></script>
+  <script src="/libs/papaparse.min.js"></script>
+  <script src="/libs/file-saver.min.js"></script>
+  <script src="/libs/jszip.min.js"></script>
+  <script src="/libs/cleave.min.js"></script>
   <script src="/sales_insights.js"></script>
   <script src="/finance_reporting.js"></script>
   <script src="/sales_playbook.js"></script>
@@ -52,42 +62,44 @@
   </div>
 
   <!-- TOPBAR ULTRA-FINE -->
-  <header class="app-topbar lux-panel border-b border-white/[0.06] px-6 py-3 flex items-center justify-between shrink-0 z-20">
-    <div class="flex items-center gap-4">
-      <div class="flex items-center gap-2.5">
-        <svg width="36" height="36" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg" class="shrink-0" aria-hidden="true" focusable="false">
+  <header class="app-topbar lux-panel border-b border-white/[0.06] px-5 py-3 flex items-center justify-between shrink-0 z-20">
+    <div class="flex items-center gap-3 min-w-0">
+      <div class="flex items-center gap-2.5 rounded-2xl border border-white/[0.06] bg-white/[0.02] px-2.5 py-1.5 shadow-[inset_0_1px_0_rgba(255,255,255,0.08)]">
+        <svg width="32" height="32" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg" class="shrink-0" aria-hidden="true" focusable="false">
           <rect width="36" height="36" rx="10" fill="url(#gradK)" />
           <path d="M11 10V26M23 10L16 18L23 26M16 18H25" stroke="#09090b" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" />
           <defs><linearGradient id="gradK" x1="0" y1="0" x2="36" y2="36" gradientUnits="userSpaceOnUse"><stop stop-color="#fbbf24" /><stop offset="1" stop-color="#34d399" /></linearGradient></defs>
         </svg>
-        <span id="brandTitle" class="font-extrabold text-sm tracking-tight gradient-text">Kynext</span>
-        <span class="text-[10px] font-bold uppercase tracking-widest px-2 py-0.5 rounded-md bg-white/[0.06] text-amber-300 border border-white/[0.08]">Studio</span>
+        <div class="flex items-center gap-2 min-w-0">
+          <span id="brandTitle" class="font-extrabold text-sm tracking-tight gradient-text">Kynext</span>
+          <span class="text-[9px] font-bold uppercase tracking-[0.22em] px-2 py-0.5 rounded-md bg-amber-300/10 text-amber-200 border border-amber-300/20">Studio</span>
+        </div>
       </div>
-      <div class="h-4 w-[1px] bg-white/10"></div>
-      <div id="kpiSummary" class="text-xs text-zinc-400 flex items-center gap-4"></div>
+      <div class="hidden md:block h-5 w-px bg-white/10"></div>
+      <div id="kpiSummary" class="text-[10px] text-zinc-400 flex items-center gap-4 min-w-0"></div>
     </div>
 
-    <div class="flex items-center gap-2">
-      <button onclick="openPipeline()" class="bg-white/[0.06] hover:bg-white/[0.1] border border-white/[0.08] text-zinc-200 text-xs font-semibold px-3 py-2 rounded-xl transition">▦ Pipeline</button>
-      <button onclick="openQuickNotes()" class="bg-white/[0.06] hover:bg-white/[0.1] border border-white/[0.08] text-zinc-200 text-xs font-semibold px-3 py-2 rounded-xl transition">✎ Note rapide</button>
-      <button onclick="openReporting()" class="bg-white/[0.06] hover:bg-white/[0.1] border border-white/[0.08] text-zinc-200 text-xs font-semibold px-3 py-2 rounded-xl transition">📊 Pilotage</button>
-      <button onclick="toggleIphonePanel()" class="bg-indigo-500/15 hover:bg-indigo-500/25 border border-indigo-400/20 text-indigo-200 text-xs font-semibold px-3 py-2 rounded-xl transition">📱 iPhone</button>
-      <button onclick="lancerRafale()" class="emerald-btn hover:opacity-95 text-xs font-extrabold px-4 py-2 rounded-xl transition">⚡ Séquence WhatsApp</button>
-      <button onclick="publierSurgeDirect()" id="btnSurge" class="bg-white/[0.06] hover:bg-white/[0.1] border border-white/[0.08] text-zinc-200 text-xs font-semibold px-3.5 py-2 rounded-xl transition">☁️ Publier Surge</button>
-      <button onclick="toggleHelpPanel()" aria-label="Raccourcis clavier" title="Raccourcis clavier (?)" class="bg-white/[0.04] hover:bg-white/[0.09] border border-white/[0.07] text-zinc-400 text-xs font-semibold w-9 h-9 rounded-xl transition">?</button>
+    <div class="flex items-center gap-2 flex-wrap justify-end">
+      <button onclick="openPipeline()" class="lux-ghost-btn">🔧 Pipeline</button>
+      <button onclick="openQuickNotes()" class="lux-ghost-btn">📝 Note rapide</button>
+      <button onclick="openReporting()" class="lux-ghost-btn">📊 Pilotage</button>
+      <button onclick="toggleIphonePanel()" class="lux-ghost-btn border-indigo-400/25 text-indigo-100 bg-indigo-500/10">📱 iPhone</button>
+      <button onclick="lancerRafale()" class="emerald-btn hover:opacity-95 text-xs font-extrabold px-4 py-2 rounded-xl transition">📱 Séquence WhatsApp</button>
+      <button onclick="publierSurgeDirect()" id="btnSurge" class="lux-ghost-btn">⚡ Publier Surge</button>
+      <button onclick="toggleHelpPanel()" aria-label="Raccourcis clavier" title="Raccourcis clavier" class="bg-white/[0.04] hover:bg-white/[0.09] border border-white/[0.07] text-zinc-400 text-xs font-semibold w-9 h-9 rounded-xl transition">?</button>
       <button onclick="ouvrirDossierWindows()" class="bg-white/[0.06] hover:bg-white/[0.1] border border-white/[0.08] text-zinc-300 text-xs font-semibold px-3 py-2 rounded-xl transition" title="Dossier Kynext">📁</button>
     </div>
   </header>
 
   <section id="iphonePanel" class="hidden fixed top-16 right-5 z-40 lux-panel rounded-3xl p-5 w-80 shadow-2xl space-y-3">
-    <div class="flex justify-between items-center"><strong class="text-sm text-white">Jumeler l’iPhone</strong><button onclick="toggleIphonePanel()" class="text-zinc-400">✕</button></div>
-    <p class="text-xs text-zinc-300">Scanne le code ou ouvre l’adresse sur le même Wi-Fi, puis saisis ce code sur l’iPhone.</p>
+    <div class="flex justify-between items-center"><strong class="text-sm text-white">Jumeler l’iPhone</strong><button onclick="toggleIphonePanel()" class="text-zinc-400">×</button></div>
+    <p class="text-xs text-zinc-300">Scanne le code ou ouvre l’adresse sur le même Wi‑Fi, puis saisis ce code sur l’iPhone.</p>
     <img id="iphoneQr" alt="QR code de connexion au pont iPhone" class="w-40 h-40 mx-auto bg-white rounded-xl p-1">
     <div class="text-center"><div class="text-[10px] uppercase tracking-widest text-zinc-400">Code valable 10 minutes</div><strong id="iphonePairCode" class="text-3xl tracking-[0.25em] text-amber-300">••••••</strong></div>
     <select id="iphoneNetwork" onchange="refreshIphonePair()" class="w-full lux-input rounded-xl px-3 py-2 text-xs text-white"></select>
     <div class="flex gap-2"><button onclick="copyIphoneUrl()" class="flex-1 bg-white/[0.06] border border-white/[0.08] text-xs font-semibold py-2 rounded-xl">Copier le lien</button><button onclick="refreshIphonePair()" class="flex-1 bg-white/[0.06] border border-white/[0.08] text-xs font-semibold py-2 rounded-xl">Actualiser</button></div>
     <div id="iphoneUrlText" class="text-[10px] text-zinc-400 break-all text-center"></div>
-    <div id="iphoneStatus" class="text-[10px] text-zinc-500 text-center">Pont prêt • même réseau Wi-Fi requis</div>
+    <div id="iphoneStatus" class="text-[10px] text-zinc-500 text-center">Pont prêt • même réseau Wi‑Fi requis</div>
   </section>
   <div id="helpPanel" class="reporting-overlay hidden" onclick="if(event.target===this) toggleHelpPanel()">
     <section class="help-dialog" role="dialog" aria-modal="true" aria-labelledby="helpTitle">
@@ -109,7 +121,7 @@
   </div>
   <aside id="quickNotesPanel" class="quick-notes-panel" aria-label="Note rapide" aria-hidden="true">
     <div class="flex items-center justify-between gap-3"><div><strong class="text-sm text-white">Note rapide</strong><p id="quickNotesCompany" class="text-[10px] text-zinc-400 mt-1">Aucune fiche sélectionnée</p></div><button onclick="closeQuickNotes()" class="text-zinc-400 hover:text-white" aria-label="Fermer les notes">×</button></div>
-    <label class="sr-only" for="quickNoteInput">Ajouter une note à la fiche active</label><textarea id="quickNoteInput" rows="7" maxlength="2000" class="w-full lux-input rounded-2xl p-3.5 text-xs text-white leading-relaxed mt-4" placeholder="Une information à retenir…"></textarea>
+    <label class="sr-only" for="quickNoteInput">Ajouter une note à la fiche active</label><textarea id="quickNoteInput" rows="7" maxlength="2000" class="w-full lux-input rounded-2xl p-3.5 text-xs text-white leading-relaxed mt-4" placeholder="Une information à retenir 🔧"></textarea>
     <button onclick="saveQuickNote()" class="gold-btn w-full rounded-xl px-4 py-2.5 text-xs font-bold mt-3">Ajouter à la fiche</button>
   </aside>
 
@@ -126,7 +138,7 @@
         <button onclick="closeReporting()" class="bg-white/[0.06] border border-white/[0.08] rounded-xl px-3 py-2 text-sm" aria-label="Fermer le rapport">×</button>
       </header>
       <div class="reporting-controls">
-        <label class="text-[11px] text-zinc-400">Mois du rapport<input id="reportMonth" type="month" onchange="renderFinanceReport()" class="block lux-input rounded-xl px-3 py-2 text-xs text-white mt-1"></label>
+        <label class="text-[11px] text-zinc-400">Mois du rapport<input id="reportMonth" type="text" inputmode="numeric" placeholder="2026-11" onchange="renderFinanceReport()" class="block lux-input rounded-xl px-3 py-2 text-xs text-white mt-1"></label>
         <button onclick="exportMonthlyAccountingCsv()" class="gold-btn rounded-xl px-4 py-2 text-xs font-bold">Exporter le journal CSV</button>
       </div>
       <div id="reportingKpis" class="reporting-kpis"></div>
@@ -135,7 +147,7 @@
         <label class="text-[11px] text-zinc-400">Frais de paiement estimés (%)<input id="reportPaymentFee" type="number" min="0" max="100" step="0.1" onchange="saveFinanceSettings()" class="block lux-input rounded-xl px-3 py-2 text-xs text-white mt-1 w-full"></label>
         <label class="text-[11px] text-zinc-400">Infrastructure mensuelle (€)<input id="reportInfrastructure" type="number" min="0" max="1000000" step="0.01" onchange="saveFinanceSettings()" class="block lux-input rounded-xl px-3 py-2 text-xs text-white mt-1 w-full"></label>
       </div>
-      <p class="text-[10px] leading-relaxed text-zinc-500">Estimations uniquement : les taux sont à configurer selon votre situation, ce calcul ne remplace pas un conseil comptable ou fiscal. Les mouvements antérieurs à l’activation du journal ne peuvent pas être reconstitués. Le rapport reste local à ce navigateur.</p>
+      <p class="text-[10px] leading-relaxed text-zinc-500">Estimations uniquement : les taux sont à configurer selon votre situation, ce calcul ne remplace pas un conseil comptable ou fiscal. Les mouvements antérieurs à l'activation du journal ne peuvent pas être reconstitués. Le rapport reste local à ce navigateur.</p>
       <div id="reportingLedger" class="reporting-ledger"></div>
     </section>
   </div>
@@ -148,7 +160,7 @@
         <!-- Segmented Control Filtres -->
         <div class="grid grid-cols-5 gap-1 bg-white/[0.04] p-1 rounded-xl border border-white/[0.05]">
           <button onclick="setFilter('prio')" id="btn-prio" class="filter-btn is-active text-[10px] font-extrabold py-1.5 rounded-lg transition" title="Prospects sans site"><span>Sans site</span><span id="filterCountPrio" class="filter-count">0</span></button>
-          <button onclick="setFilter('review')" id="btn-review" class="filter-btn text-zinc-400 hover:text-white text-[9px] font-semibold py-1.5 rounded-lg transition" title="Fiches sans téléphone professionnel vérifié"><span>À vérifier</span><span id="filterCountReview" class="filter-count">0</span></button>
+          <button onclick="setFilter('review')" id="btn-review" class="filter-btn text-zinc-400 hover:text-white text-[9px] font-semibold py-1.5 rounded-lg transition" title="Fiches sans téléphone professionnel vérifié"><span>A vérifier</span><span id="filterCountReview" class="filter-count">0</span></button>
           <button onclick="setFilter('mobile')" id="btn-mobile" class="filter-btn text-zinc-400 hover:text-white text-[10px] font-semibold py-1.5 rounded-lg transition" title="Prospects avec mobile"><span>06 / 07</span><span id="filterCountMobile" class="filter-count">0</span></button>
           <button onclick="setFilter('vues')" id="btn-vues" class="filter-btn text-zinc-400 hover:text-white text-[10px] font-semibold py-1.5 rounded-lg transition" title="Prospects chauds"><span>Chauds</span><span id="filterCountHot" class="filter-count">0</span></button>
           <button onclick="setFilter('all')" id="btn-all" class="filter-btn text-zinc-400 hover:text-white text-[10px] font-semibold py-1.5 rounded-lg transition" title="Toutes les fiches"><span>Tous</span><span id="filterCountAll" class="filter-count">0</span></button>
@@ -160,9 +172,9 @@
           <option value="hot">Priorité élevée</option>
           <option value="closed">Clôturés</option>
         </select>
-        <p class="text-[10px] leading-relaxed text-zinc-500">Indice CRM indicatif, basé sur le statut et les interactions consignées — ce n’est pas une probabilité de conversion.</p>
+        <p class="text-[10px] leading-relaxed text-zinc-500">Indice CRM indicatif, basé sur le statut et les interactions consignées. Ce n'est pas une probabilité de conversion.</p>
         <div class="flex gap-1.5">
-          <input id="search" oninput="renderList()" type="search" aria-label="Rechercher un prospect" placeholder="Nom, ville, métier…  /" title="Rechercher (/ ou Ctrl+K)" class="flex-1 lux-input rounded-xl px-3.5 py-2 text-xs text-white placeholder-zinc-500">
+          <input id="search" oninput="renderList()" type="search" aria-label="Rechercher un prospect" placeholder="Nom, ville, métier… /" title="Rechercher (/ ou Ctrl+K)" class="flex-1 lux-input rounded-xl px-3.5 py-2 text-xs text-white placeholder-zinc-500">
           <input id="csvImportFile" type="file" accept=".csv,text/csv" class="hidden">
           <button onclick="openCsvImport()" aria-label="Importer des prospects CSV" title="Importer un CSV ou déposer le fichier dans la liste" class="bg-white/[0.06] hover:bg-white/[0.12] border border-white/[0.08] text-zinc-200 text-[10px] font-bold px-2.5 rounded-xl transition">CSV ↓</button>
           <button onclick="ajouterProspectRapide()" aria-label="Ajouter une fiche" title="Ajouter une fiche" class="bg-white/[0.06] hover:bg-white/[0.12] border border-white/[0.08] text-white text-xs font-bold px-3 rounded-xl transition">＋</button>
@@ -195,11 +207,11 @@
           <span id="saveStatus" class="save-status text-[10px] text-zinc-500" aria-live="polite"></span>
           <div id="cpQuickLinks" class="flex items-center gap-2"></div>
           <select id="cpStatus" onchange="updateStatus()" class="lux-input text-xs font-bold rounded-xl px-3.5 py-2.5 text-white cursor-pointer">
-            <option value="todo">⚪ À contacter</option>
-            <option value="sent">🟡 Contacté WA / SMS</option>
-            <option value="hot">🔵 Prospect Chaud 🔥</option>
-            <option value="sold">● Client vendu (790 € indicatifs)</option>
-            <option value="refused">● Refus / Archivé</option>
+            <option value="todo">À contacter</option>
+            <option value="sent">🏆 Contact WA / SMS</option>
+            <option value="hot">💬 Prospect chaud 🔥</option>
+            <option value="sold">💼 Client vendu (790 € indicatifs)</option>
+            <option value="refused">🚫 Refus / Archivage</option>
           </select>
         </div>
       </div>
@@ -212,8 +224,8 @@
           <button onclick="setTab('closing')" id="tab-closing" class="text-zinc-400 hover:text-white text-xs font-semibold px-4 py-1.5 rounded-lg transition">3. Proposition & Paiement</button>
         </div>
         <div class="flex items-center gap-2">
-          <button onclick="navProspect(-1)" title="Prospect précédent (↑)" data-hover-label="Précédent · ↑" class="bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.06] text-zinc-300 text-xs font-semibold px-3 py-1.5 rounded-lg transition">◀ Précédent</button>
-          <button onclick="navProspect(1)" title="Prospect suivant (↓)" data-hover-label="Suivant · ↓" class="bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.06] text-zinc-300 text-xs font-semibold px-3 py-1.5 rounded-lg transition">Suivant ▶</button>
+          <button onclick="navProspect(-1)" title="Prospect pr?cdent (↑)" data-hover-label="Pr?c?dent · ↑" class="bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.06] text-zinc-300 text-xs font-semibold px-3 py-1.5 rounded-lg transition">€ Pr?c?dent</button>
+          <button onclick="navProspect(1)" title="Prospect suivant (↓)" data-hover-label="Suivant · ↓" class="bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.06] text-zinc-300 text-xs font-semibold px-3 py-1.5 rounded-lg transition">Suivant ?¶</button>
         </div>
       </div>
 
@@ -226,23 +238,23 @@
           <div class="lg:col-span-5 space-y-5">
             <div class="lux-card rounded-3xl p-6 space-y-4">
               <div class="flex justify-between items-center">
-                <span class="text-xs font-bold uppercase tracking-wider text-zinc-400">Coordonnées Directes</span>
-                <button onclick="autoEnrichPhones()" id="btnSinglePhone" class="text-xs font-bold text-amber-400 hover:text-amber-300 transition">🧭 Sources publiques</button>
+                <span class="text-xs font-bold uppercase tracking-wider text-zinc-400">Coordonn?es Directes</span>
+                <button onclick="autoEnrichPhones()" id="btnSinglePhone" class="text-xs font-bold text-amber-400 hover:text-amber-300 transition">🔎 Sources publiques</button>
               </div>
               <div class="space-y-3.5">
                 <div>
-                  <label class="text-[11px] font-medium text-zinc-400">Numéro de téléphone</label>
-                  <input id="editTel" type="tel" placeholder="Saisir un numéro vérifié" onchange="saveContactInfo()" class="w-full lux-input rounded-2xl px-4 py-3 text-sm font-extrabold text-emerald-400 mt-1">
-                  <label for="editTelSource" class="block text-[11px] font-medium text-zinc-400 mt-3">Source publique de vérification</label>
+                  <label class="text-[11px] font-medium text-zinc-400">Num?ro de tl?phone</label>
+                  <input id="editTel" type="tel" placeholder="Saisir un num?ro vrifi?" onchange="saveContactInfo()" class="w-full lux-input rounded-2xl px-4 py-3 text-sm font-extrabold text-emerald-400 mt-1">
+                  <label for="editTelSource" class="block text-[11px] font-medium text-zinc-400 mt-3">Source publique de vrification</label>
                   <input id="editTelSource" type="url" placeholder="Lien HTTPS vers la source" onchange="saveContactInfo()" class="w-full lux-input rounded-xl px-3 py-2 text-xs text-white mt-1">
-                  <label class="flex items-center gap-2 text-[11px] text-zinc-400 mt-2"><input id="editTelVerified" type="checkbox" onchange="saveContactInfo()"> Numéro confirmé sur cette source</label>
+                  <label class="flex items-center gap-2 text-[11px] text-zinc-400 mt-2"><input id="editTelVerified" type="checkbox" onchange="saveContactInfo()"> Num?ro confirm?sur cette source</label>
                   <a id="phoneEvidenceLink" class="hidden text-[10px] text-emerald-300 underline mt-1" target="_blank" rel="noopener noreferrer">Consulter la preuve HTTPS</a>
                   <p id="phoneLookupStatus" class="text-[10px] text-zinc-500 mt-2" aria-live="polite">Aucune recherche manuelle</p>
-                  <button type="button" onclick="markNoPhoneFound()" class="text-[10px] font-semibold text-zinc-400 hover:text-white mt-1">Aucun numéro professionnel public trouvé</button>
+                  <button type="button" onclick="markNoPhoneFound()" class="text-[10px] font-semibold text-zinc-400 hover:text-white mt-1">Aucun num?ro professionnel public trouv?</button>
                   <div id="deepSearchSummary" class="hidden mt-3 p-3 rounded-xl border border-white/[0.08] bg-white/[0.025]">
                     <div class="flex justify-between items-center gap-2"><span class="text-[10px] font-bold text-zinc-300">Recherches manuelles par source</span><span id="deepSearchCompleteness" class="text-[9px] text-zinc-500"></span></div>
                     <div id="deepSearchSources" class="mt-2 flex flex-wrap gap-1.5"></div>
-                    <p class="text-[9px] text-zinc-500 mt-2">Les liens ouvrent des recherches publiques. Vérifie l’entreprise et sa source; aucun résultat n’est ajouté automatiquement.</p>
+                    <p class="text-[9px] text-zinc-500 mt-2">Les liens ouvrent des recherches publiques. Vrifie l?entreprise et sa source; aucun rsultat n?est ajout?automatiquement.</p>
                   </div>
                 </div>
                 <div>
@@ -250,8 +262,8 @@
                   <input id="editEmail" type="email" placeholder="contact@artisan.fr" onchange="saveContactInfo()" class="w-full lux-input rounded-2xl px-4 py-2.5 text-xs text-white mt-1">
                 </div>
                 <div class="rounded-xl border border-rose-400/20 bg-rose-400/[0.04] p-3">
-                  <label class="flex items-center gap-2 text-xs font-bold text-rose-200"><input id="doNotContact" type="checkbox" onchange="toggleDoNotContact()"> Ne plus contacter — suppression permanente</label>
-                  <p id="doNotContactStatus" class="text-[10px] text-zinc-500 mt-1" aria-live="polite">Désactivé</p>
+                  <label class="flex items-center gap-2 text-xs font-bold text-rose-200"><input id="doNotContact" type="checkbox" onchange="toggleDoNotContact()"> Ne plus contacter ?suppression permanente</label>
+                  <p id="doNotContactStatus" class="text-[10px] text-zinc-500 mt-1" aria-live="polite">Dsactiv?</p>
                 </div>
               </div>
             </div>
@@ -260,9 +272,9 @@
               <span class="text-xs font-bold uppercase tracking-wider text-zinc-400">Notes & Qualification</span>
               <textarea id="callNotes" rows="4" onkeyup="saveNotes()" placeholder="Notes prises durant l'appel, besoins du client..." class="w-full lux-input rounded-2xl p-3.5 text-xs text-white leading-relaxed"></textarea>
               <div class="grid grid-cols-3 gap-2 pt-1">
-                <button onclick="qualifierAppel('Répondeur', 'sent')" class="bg-white/[0.05] hover:bg-white/[0.1] border border-white/[0.07] text-[11px] font-semibold py-2.5 rounded-xl transition">📼 Répondeur</button>
-                <button onclick="qualifierAppel('À rappeler', 'sent')" class="bg-white/[0.05] hover:bg-white/[0.1] border border-white/[0.07] text-[11px] font-semibold py-2.5 rounded-xl transition">⏰ Rappeler</button>
-                <button onclick="qualifierAppel('Très intéressé', 'hot')" class="bg-sky-500/15 hover:bg-sky-500/25 text-sky-300 border border-sky-400/30 text-[11px] font-bold py-2.5 rounded-xl transition">🔥 Chaud</button>
+                <button onclick="qualifierAppel('Répondeur', 'sent')" class="bg-white/[0.05] hover:bg-white/[0.1] border border-white/[0.07] text-[11px] font-semibold py-2.5 rounded-xl transition">📞 Répondeur</button>
+                <button onclick="qualifierAppel('À rappeler', 'sent')" class="bg-white/[0.05] hover:bg-white/[0.1] border border-white/[0.07] text-[11px] font-semibold py-2.5 rounded-xl transition">⏱ Rappeler</button>
+                <button onclick="qualifierAppel('Très intéressant', 'hot')" class="bg-sky-500/15 hover:bg-sky-500/25 text-sky-300 border border-sky-400/30 text-[11px] font-bold py-2.5 rounded-xl transition">🔥 Chaud</button>
               </div>
             </div>
           </div>
@@ -270,8 +282,8 @@
           <div class="lg:col-span-7 space-y-5">
             <div class="lux-card rounded-3xl p-6 border-l-2 border-l-amber-400 space-y-2">
               <div class="flex justify-between items-center">
-                <span class="text-[11px] font-extrabold uppercase tracking-wider text-amber-400">🎙️ Pitch Téléphone (30s)</span>
-                <span class="text-[11px] text-emerald-400 font-semibold">790  sans abonnement</span>
+                <span class="text-[11px] font-extrabold uppercase tracking-wider text-amber-400">🎯 Pitch Téléphone (30s)</span>
+                <span class="text-[11px] text-emerald-400 font-semibold">790 € sans abonnement</span>
               </div>
               <p id="cpPitch" class="text-sm text-zinc-200 leading-relaxed"></p>
             </div>
@@ -280,20 +292,21 @@
               <div class="flex flex-wrap justify-between items-center gap-2">
                 <span class="text-xs font-bold uppercase tracking-wider text-zinc-400">Message WhatsApp / SMS</span>
                 <select id="scenarioSelect" onchange="choisirScenario(this.value)" class="lux-input rounded-xl px-3.5 py-2 text-xs text-amber-300 font-semibold cursor-pointer">
-                  <option value="v1">✨ 1er Contact — Accroche Directe</option>
-                  <option value="v2">✨ 1er Contact — Visibilité Google</option>
-                  <option value="v3">✨ 1er Contact — Démo Simulateur</option>
-                  <option value="j3">🔁 Relance douce (J+3)</option>
+                  <option value="v1">📨 1er Contact — Accroche Directe</option>
+                  <option value="v2">📨 1er Contact — Visibilité Google</option>
+                  <option value="v3">📨 1er Contact — Démo Simulateur</option>
+                  <option value="j3">📄 Relance douce (J+3)</option>
                   <option value="j7">⏳ Dernière relance (J+7)</option>
-                  <option value="tarif">💶 Réponse : Tarif 790  clé en main</option>
-                  <option value="2x">💳 Réponse : Facilité 2 × 395 </option>
-                  <option value="fb">📱 Réponse : J'ai déjà Facebook</option>
-                  <option value="pj">📉 Réponse : Comparaison PagesJaunes</option>
-                  <option value="obj_prix">💶 Objection : budget</option>
-                  <option value="obj_temps">⏱️ Objection : manque de temps</option>
-                  <option value="obj_utilite">🎯 Objection : utilité</option>
+                  <option value="j90">🌍 Prendre des nouvelles (J+3 mois)</option>
+                  <option value="tarif">💬 Réponse : Tarif 790 € clé en main</option>
+                  <option value="2x">💳 Réponse : Facilité 2× à 395 €</option>
+                  <option value="fb">📱 Réponse : J’ai déjà Facebook</option>
+                  <option value="pj">📊 Réponse : Comparaison PagesJaunes</option>
+                  <option value="obj_prix">💬 Objection : budget</option>
+                  <option value="obj_temps">⚠ Objection : manque de temps</option>
+                  <option value="obj_utilite">🧭 Objection : utilité</option>
                   <option value="obj_site">🌐 Objection : site déjà existant</option>
-                  <option value="stop">⛔ Clôturer les relances</option>
+                  <option value="stop">⏹ Clôturer les relances</option>
                 </select>
               </div>
 
@@ -312,15 +325,15 @@
           <div class="lux-card rounded-2xl px-5 py-3 flex flex-wrap justify-between items-center gap-2">
             <div class="studio-site-info"><a id="iframeUrlLink" href="#" target="_blank" rel="noopener noreferrer" class="text-xs text-amber-300 hover:underline font-mono truncate"></a><span id="studioPublishStatus" class="studio-status">Maquette locale</span></div>
             <div class="flex items-center gap-2">
-              <button onclick="setPreviewMode('desktop')" id="btnPrevDesk" class="gold-btn text-xs font-extrabold px-3.5 py-1.5 rounded-xl">💻 PC</button>
+              <button onclick="setPreviewMode('desktop')" id="btnPrevDesk" class="gold-btn text-xs font-extrabold px-3.5 py-1.5 rounded-xl">🖥 PC</button>
               <button onclick="setPreviewMode('mobile')" id="btnPrevMob" class="bg-white/[0.06] text-zinc-300 text-xs font-semibold px-3.5 py-1.5 rounded-xl">📱 Mobile</button>
               <button onclick="validateCurrentSite()" id="btnValidateSite" class="bg-white/[0.06] text-zinc-200 text-xs font-semibold px-3.5 py-1.5 rounded-xl">✓ Valider le site</button>
-              <a id="btnOpenExt" href="#" target="_blank" rel="noopener noreferrer" class="bg-white text-zinc-950 text-xs font-extrabold px-3.5 py-1.5 rounded-xl" aria-label="Ouvrir la maquette dans un nouvel onglet">↗ Ouvrir</a>
+              <a id="btnOpenExt" href="#" target="_blank" rel="noopener noreferrer" class="bg-white text-zinc-950 text-xs font-extrabold px-3.5 py-1.5 rounded-xl" aria-label="Ouvrir la maquette dans un nouvel onglet">→ Ouvrir</a>
             </div>
           </div>
           <div id="previewStage" class="preview-stage flex-1 flex justify-center rounded-3xl p-3 border border-white/[0.06] overflow-hidden">
             <div id="previewLoading" class="preview-loading" aria-hidden="true"><span class="loading-spinner"></span></div>
-            <iframe id="maquetteIframe" src="about:blank" sandbox="allow-scripts allow-forms allow-popups allow-popups-to-escape-sandbox" title="Aperçu de la maquette de l’entreprise" class="preview-frame h-full"></iframe>
+            <iframe id="maquetteIframe" src="about:blank" sandbox="allow-scripts allow-forms allow-popups allow-popups-to-escape-sandbox" title="Aperçu de la maquette de l'entreprise" class="preview-frame h-full"></iframe>
           </div>
         </div>
 
@@ -329,53 +342,53 @@
           <div class="lux-card rounded-3xl p-7 space-y-5">
             <h3 class="text-sm font-extrabold uppercase tracking-wider text-amber-400">1. Proposition & Devis PDF</h3>
             <div class="space-y-3 bg-black/40 p-4 rounded-2xl border border-white/[0.06]">
-              <p class="text-[11px] text-amber-200">Montants indicatifs à confirmer avec le client avant tout accord.</p>
+              <p class="text-[11px] text-amber-200">Montants indicatifs ?confirmer avec le client avant tout accord.</p>
               <label class="flex items-center gap-3 text-xs text-zinc-200 font-semibold cursor-pointer">
-                <input id="chkUpsell" type="checkbox" onchange="toggleUpsell()" class="accent-amber-400 h-4 w-4"> Option domaine et présence locale (+190 €)
+                <input id="chkUpsell" type="checkbox" onchange="toggleUpsell()" class="accent-amber-400 h-4 w-4"> Option domaine et pr?sence locale (+190 €)
               </label>
               <label class="flex items-center gap-3 text-xs text-zinc-400 cursor-pointer">
-                <input id="chkMaint" type="checkbox" class="accent-amber-400 h-4 w-4"> Maintenance & hébergement (+29 € / mois)
+                <input id="chkMaint" type="checkbox" class="accent-amber-400 h-4 w-4"> Maintenance & hbergement (+29 € / mois)
               </label>
             </div>
             <button id="btnDevis" onclick="genererDevisPDF()" class="w-full gold-btn hover:opacity-95 text-xs font-extrabold py-4 rounded-2xl transition">📄 Imprimer la proposition indicative (790 €)</button>
             <div class="grid grid-cols-3 gap-2.5">
               <button id="btnAcompte" onclick="envoyerLienAcompte()" class="bg-white/[0.06] hover:bg-white/[0.12] border border-white/[0.08] text-white text-xs font-bold py-3 rounded-xl transition">Acompte 30%</button>
-              <button id="btnHalfPayment" onclick="envoyerLien2x()" class="bg-white/[0.06] hover:bg-white/[0.12] border border-white/[0.08] text-white text-xs font-bold py-3 rounded-xl transition">2 × 395 €</button>
+              <button id="btnHalfPayment" onclick="envoyerLien2x()" class="bg-white/[0.06] hover:bg-white/[0.12] border border-white/[0.08] text-white text-xs font-bold py-3 rounded-xl transition">2 ?395 €</button>
               <button id="btnTotal" onclick="envoyerLienTotal()" class="emerald-btn text-xs font-extrabold py-3 rounded-xl transition">Total indicatif 790 €</button>
             </div>
             <div class="rounded-2xl bg-black/30 border border-white/[0.06] p-4 space-y-3">
-              <div class="flex justify-between items-center gap-3"><strong class="text-xs text-zinc-200">Suivi manuel du règlement</strong><span class="text-[10px] text-zinc-500">EUR</span></div>
+              <div class="flex justify-between items-center gap-3"><strong class="text-xs text-zinc-200">Suivi manuel du rglement</strong><span class="text-[10px] text-zinc-500">EUR</span></div>
               <select id="paymentStatus" onchange="savePaymentInfo()" aria-label="Statut du paiement" class="w-full lux-input rounded-xl px-3 py-2 text-xs text-white">
-                <option value="not_invoiced">Non facturé</option>
-                <option value="deposit_requested">Acompte demandé</option>
-                <option value="deposit_received">Acompte reçu</option>
-                <option value="balance_requested">Solde demandé</option>
-                <option value="paid">Réglé</option>
-                <option value="refunded">Remboursé</option>
+                <option value="not_invoiced">Non factur?</option>
+                <option value="deposit_requested">Acompte demand?</option>
+                <option value="deposit_received">Acompte reu</option>
+                <option value="balance_requested">Solde demand?</option>
+                <option value="paid">Rgl?</option>
+                <option value="refunded">Rembours?</option>
               </select>
-              <label class="block text-[11px] text-zinc-400">Solde net encaissé (€)<input id="paidAmount" type="number" readonly class="payment-balance w-full lux-input rounded-xl px-3 py-2 text-xs text-white mt-1"></label>
+              <label class="block text-[11px] text-zinc-400">Solde net encaiss?(€)<input id="paidAmount" type="number" readonly class="payment-balance w-full lux-input rounded-xl px-3 py-2 text-xs text-white mt-1"></label>
               <div class="payment-movement">
                 <select id="paymentMovementType" aria-label="Type de mouvement" class="lux-input rounded-xl px-2 py-2 text-xs text-white"><option value="receipt">Encaissement</option><option value="refund">Remboursement</option></select>
                 <input id="paymentMovementAmount" type="number" min="0.01" max="1000000" step="0.01" aria-label="Montant du mouvement" placeholder="Montant €" class="lux-input rounded-xl px-2 py-2 text-xs text-white">
                 <button onclick="recordPaymentMovement()" class="gold-btn rounded-xl px-3 py-2 text-xs font-bold" aria-label="Journaliser le mouvement">+</button>
               </div>
-              <p class="text-[10px] leading-relaxed text-zinc-500">Journalise uniquement les mouvements confirmés auprès du prestataire. Le statut reste manuel ; aucun paiement n’est vérifié automatiquement.</p>
+              <p class="text-[10px] leading-relaxed text-zinc-500">Journalise uniquement les mouvements confirm?s aupr?s du prestataire. Le statut reste manuel ; aucun paiement n?est vrifi?automatiquement.</p>
               <a id="paymentLinkDraftLink" class="hidden text-[10px] text-emerald-300 underline break-all" target="_blank" rel="noopener noreferrer"></a>
             </div>
           </div>
 
           <div class="lux-card rounded-3xl p-7 space-y-5">
-            <h3 class="text-sm font-extrabold uppercase tracking-wider text-zinc-400">2. Livrables & Paramètres</h3>
+            <h3 class="text-sm font-extrabold uppercase tracking-wider text-zinc-400">2. Livrables & Param?tres</h3>
             <label class="publish-approval">
               <input id="publishApproval" type="checkbox" onchange="togglePublishApproval()">
-              <span class="publish-approval__copy"><strong>Autoriser la publication de cette fiche</strong><span>À cocher uniquement après validation de l’entreprise. Sans accord, sa maquette reste locale et ne sera pas incluse dans une publication.</span></span>
+              <span class="publish-approval__copy"><strong>Autoriser la publication de cette fiche</strong><span>À cocher uniquement apr?s validation de l?entreprise. Sans accord, sa maquette reste locale et ne sera pas incluse dans une publication.</span></span>
             </label>
             <div class="grid grid-cols-2 gap-3">
-              <button onclick="envoyerBienvenue()" class="bg-white/[0.04] hover:bg-white/[0.09] border border-white/[0.07] text-xs font-semibold py-3.5 rounded-2xl transition">📦 Checklist Client</button>
+              <button onclick="envoyerBienvenue()" class="bg-white/[0.04] hover:bg-white/[0.09] border border-white/[0.07] text-xs font-semibold py-3.5 rounded-2xl transition">📎 Checklist Client</button>
               <button onclick="genererCarteVisitePDF()" class="bg-white/[0.04] hover:bg-white/[0.09] border border-white/[0.07] text-xs font-semibold py-3.5 rounded-2xl transition">🪪 Carte Visite PDF</button>
-              <button onclick="genererAfficheAvisPDF()" class="bg-white/[0.04] hover:bg-white/[0.09] border border-white/[0.07] text-xs font-semibold py-3.5 rounded-2xl transition">⭐ Affiche Avis QR</button>
-              <button onclick="exporterCSV()" class="bg-white/[0.04] hover:bg-white/[0.09] border border-white/[0.07] text-xs font-semibold py-3.5 rounded-2xl transition">📥 Export CSV</button>
-              <button onclick="exporterMobilesVerifies()" class="bg-white/[0.04] hover:bg-white/[0.09] border border-white/[0.07] text-xs font-semibold py-3.5 rounded-2xl transition">📱 Exporter mobiles vérifiés</button>
+              <button onclick="genererAfficheAvisPDF()" class="bg-white/[0.04] hover:bg-white/[0.09] border border-white/[0.07] text-xs font-semibold py-3.5 rounded-2xl transition">â­ Affiche Avis QR</button>
+              <button onclick="exporterCSV()" class="bg-white/[0.04] hover:bg-white/[0.09] border border-white/[0.07] text-xs font-semibold py-3.5 rounded-2xl transition">📤 Export CSV</button>
+              <button onclick="exporterMobilesVerifies()" class="bg-white/[0.04] hover:bg-white/[0.09] border border-white/[0.07] text-xs font-semibold py-3.5 rounded-2xl transition">📱 Exporter mobiles vrifi?s</button>
             </div>
             <div class="space-y-2.5 pt-2">
               <input id="payLinkBase" type="url" placeholder="Compte PayPal.me, ex. https://paypal.me/votrecompte" onchange="saveConfig()" class="w-full lux-input rounded-xl px-3.5 py-2.5 text-xs text-white">
@@ -391,29 +404,32 @@
     var API_TOKEN = "__ARGENT_API_TOKEN__";
     async function apiFetch(url, options) { options = options || {}; options.headers = Object.assign({}, options.headers || {}, { "X-Argent-Token": API_TOKEN }); return fetch(url, options); }
     function readStoredJson(key, fallback) { try { return JSON.parse(localStorage.getItem(key) || JSON.stringify(fallback)); } catch (e) { return fallback; } }
-    function escapeHTML(value) { return String(value == null ? "" : value).replace(/[&<>"\x27]/g, function(ch) { if(ch==="&")return "&amp;";if(ch==="<")return "&lt;";if(ch===">")return "&gt;";if(ch==="\x22")return "&quot;";return "&#39;"; }); }
-    function safePublicUrl(value) { try { var u = new URL(String(value || "")); return u.protocol === "https:" ? u.href : ""; } catch (e) { return ""; } }
-    function qrDataUrl(value, size) { if (typeof QRious !== "function") throw new Error("Générateur QR local indisponible"); return new QRious({ value: String(value || ""), size: size, level: "H", background: "#ffffff", foreground: "#111827" }).toDataURL(); }
+    function escapeHTML(value) { return String(value == null ?"" : value).replace(/[&<>"\x27]/g, function(ch) { if(ch==="&")return "&amp;";if(ch==="<")return "&lt;";if(ch===">")return "&gt;";if(ch==="\x22")return "&quot;";return "&#39;"; }); }
+    function safePublicUrl(value) { try { var u = new URL(String(value || "")); return u.protocol === "https:?u.href : ""; } catch (e) { return ""; } }
+    function qrDataUrl(value, size) { if (typeof QRious !== "function") throw new Error("G ? rateur QR local indisponible"); return new QRious({ value: String(value || ""), size: size, level: "H", background: "#ffffff", foreground: "#111827" }).toDataURL(); }
     var DATA = [];
     var state = readStoredJson("crm_luxury_v3", {});
     var stateReady = false;
     var cfg = readStoredJson("cockpit_cfg_456", { "pay": "" });
-    var currentFilter = "prio";
+    var currentFilter = readStoredJson("kynext_last_filter", "prio");
+    if (["prio", "review", "mobile", "vues", "all"].indexOf(currentFilter) === -1) currentFilter = "prio";
     var filteredList = [];
+    var prospectFuse = null;
     var selected = DATA[0] || {};
 
-    var STATUS_LABELS = { todo: "À contacter", sent: "Contacté", hot: "Chaud 🔥", sold: "Vendu ✅", refused: "Refus" };
+    var STATUS_LABELS = { todo: "À contacter", sent: "Contact?", hot: "Chaud 🔥", sold: "Vendu ?&", refused: "Refus" };
 
     document.getElementById("payLinkBase").value = cfg.pay || "";
 
     function notify(msg) {
       var box = document.getElementById("toastBox");
-      var text = String(msg || "Mise à jour");
-      var kind = /gemini|\bia\b/i.test(text) ? "ai" : (/échec|impossible|invalide|refus|bloquée|indisponible/i.test(text) ? "error" : (/enregistr|copié|mis à jour|terminée|réussi|journalisé/i.test(text) ? "success" : "info"));
+      var text = String(msg || "Mise ?jour");
+      var kind = /gemini|\bia\b/i.test(text) ?"ai" : (/?chec|impossible|invalide|refus|bloqu?e|indisponible/i.test(text) ?"error" : (/enregistr|copi?|mis ?jour|termin?e|r?ssi|journalis?/i.test(text) ?"success" : "info"));
+      if (typeof Toastify === "function") { Toastify({ text: text, duration: 3600, gravity: "bottom", position: "right", close: true, stopOnFocus: true, style: { background: kind === "error?"#7f1d1d" : (kind === "success?"#065f46" : "#27272a"), border: "1px solid rgba(255,255,255,.16)", borderRadius: "12px", fontSize: "12px" } }).showToast(); return; }
       var toast = document.createElement("div"); toast.className = "toast-item"; toast.dataset.kind = kind; toast.setAttribute("role", "status");
-      var icon = document.createElement("span"); icon.className = "toast-icon"; icon.textContent = kind === "success" ? "✓" : (kind === "error" ? "!" : "•");
+      var icon = document.createElement("span"); icon.className = "toast-icon"; icon.textContent = kind === "success?"?" : (kind === "error?"!" : "•");
       var label = document.createElement("span"); label.className = "text-xs font-semibold text-zinc-100"; label.textContent = text;
-      var close = document.createElement("button"); close.className = "toast-close"; close.type = "button"; close.setAttribute("aria-label", "Fermer la notification"); close.textContent = "×"; close.onclick = function(){ dismissToast(toast); };
+      var close = document.createElement("button"); close.className = "toast-close"; close.type = "button"; close.setAttribute("aria-label", "Fermer la notification"); close.textContent = "?"; close.onclick = function(){ dismissToast(toast); };
       toast.appendChild(icon); toast.appendChild(label); toast.appendChild(close); box.appendChild(toast);
       while (box.children.length > 4) dismissToast(box.firstElementChild, true);
       var duration = Math.min(7000, Math.max(2600, 1800 + text.length * 38));
@@ -429,20 +445,20 @@
 
     function toggleHelpPanel() { document.getElementById("helpPanel").classList.toggle("hidden"); }
     function animatePanel(panel) { panel.classList.remove("view-enter"); void panel.offsetWidth; panel.classList.add("view-enter"); }
-    function openPipeline() { if (!stateReady) return notify("Chargement des données en cours."); renderList(); renderPipeline(); document.getElementById("pipelinePanel").classList.remove("hidden"); }
+    function openPipeline() { if (!stateReady) return notify("Chargement des donn?es en cours."); renderList(); renderPipeline(); document.getElementById("pipelinePanel").classList.remove("hidden"); }
     function closePipeline() { document.getElementById("pipelinePanel").classList.add("hidden"); }
     function renderPipeline() {
       var statuses = ["todo", "sent", "hot", "sold", "refused"];
-      var labels = { todo: "À contacter", sent: "Contacté", hot: "Chaud", sold: "Vendu", refused: "Refus" };
+      var labels = { todo: "À contacter", sent: "Contact?", hot: "Chaud", sold: "Vendu", refused: "Refus" };
       var columns = statuses.map(function(status) {
         var cards = filteredList.filter(function(p) { return getStatus(p.siren) === status; });
-        var content = cards.map(function(p) { return "<button type=\"button\" draggable=\"true\" data-prospect-id=\"" + escapeHTML(p.siren) + "\" class=\"pipeline-card\" onclick=\"selectProspect(" + escapeHTML(JSON.stringify(String(p.siren))) + ");closePipeline()\"><strong>" + escapeHTML(p.nom) + "</strong><span>" + escapeHTML(p.ville || "") + " · " + escapeHTML((p.metier || "").split(" ")[0]) + "</span><small>" + (p.tel ? "Téléphone disponible" : "Sans téléphone") + "</small></button>"; }).join("");
-        return "<section class=\"pipeline-column\" data-drop-status=\"" + status + "\"><header><strong>" + labels[status] + "</strong><span>" + cards.length + "</span></header><div class=\"pipeline-cards\">" + (content || "<p class=\"pipeline-empty\">Déposez une fiche ici</p>") + "</div></section>";
+        var content = cards.map(function(p) { return "<button type=\"button\" draggable=\"true\" data-prospect-id=\"" + escapeHTML(p.siren) + "\" class=\"pipeline-card\" onclick=\"selectProspect(" + escapeHTML(JSON.stringify(String(p.siren))) + ");closePipeline()\"><strong>" + escapeHTML(p.nom) + "</strong><span>" + escapeHTML(p.ville || "") + " · " + escapeHTML((p.metier || "").split(" ")[0]) + "</span><small>" + (p.tel ?"T?l?phone disponible" : "Sans tl?phone") + "</small></button>"; }).join("");
+        return "<section class=\"pipeline-column\" data-drop-status=\"" + status + "\"><header><strong>" + labels[status] + "</strong><span>" + cards.length + "</span></header><div class=\"pipeline-cards\">" + (content || "<p class=\"pipeline-empty\">Dposez une fiche ici</p>") + "</div></section>";
       });
       document.getElementById("pipelineBoard").innerHTML = columns.join("");
     }
     function openQuickNotes() {
-      if (!selected || !selected.siren) return notify("Sélectionne d’abord une fiche.");
+      if (!selected || !selected.siren) return notify("Slectionne d?bord une fiche.");
       document.getElementById("quickNotesCompany").textContent = selected.nom + " · " + selected.ville;
       document.getElementById("quickNotesPanel").dataset.prospectId = String(selected.siren);
       document.getElementById("quickNotesPanel").classList.add("is-open"); document.getElementById("quickNotesPanel").setAttribute("aria-hidden", "false");
@@ -453,18 +469,18 @@
       var note = document.getElementById("quickNoteInput").value.trim();
       var siren = document.getElementById("quickNotesPanel").dataset.prospectId;
       var prospect = DATA.find(function(p) { return String(p.siren) === String(siren); });
-      if (!prospect) return notify("La fiche associée à cette note n’existe plus.");
-      if (!note) return notify("Écris une note avant de l’ajouter.");
+      if (!prospect) return notify("La fiche associ?e ?cette note n?existe plus.");
+      if (!note) return notify("Écris une note avant de l?ajouter.");
       var current = state[siren] || {}; var stamp = new Date().toLocaleString("fr-FR", { dateStyle: "short", timeStyle: "short" });
-      state[siren] = Object.assign({}, current, { notes: (current.notes ? current.notes + " | " : "") + "[" + stamp + "] " + note });
+      state[siren] = Object.assign({}, current, { notes: (current.notes ?current.notes + " | " : "") + "[" + stamp + "] " + note });
       if (selected && String(selected.siren) === String(siren)) document.getElementById("callNotes").value = state[siren].notes;
       document.getElementById("quickNoteInput").value = "";
-      saveState(); closeQuickNotes(); notify("Note ajoutée à " + prospect.nom + " ✓");
+      saveState(); closeQuickNotes(); notify("Note ajout?e ?" + prospect.nom + ?");
     }
 
     function getStatus(siren) {
-      var st = (state[siren] && state[siren].status) ? state[siren].status : "todo";
-      return STATUS_LABELS[st] ? st : "todo";
+      var st = (state[siren] && state[siren].status) ?state[siren].status : "todo";
+      return STATUS_LABELS[st] ?st : "todo";
     }
 
     function setPreviewMode(mode) {
@@ -488,7 +504,7 @@
         var t = tabs[i];
         document.getElementById("view-" + t).classList.toggle("hidden", t !== tabName);
         document.getElementById("tab-" + t).className = (t === tabName)
-          ? "bg-white/10 text-white text-xs font-bold px-4 py-1.5 rounded-lg shadow transition"
+          ?"bg-white/10 text-white text-xs font-bold px-4 py-1.5 rounded-lg shadow transition"
           : "text-zinc-400 hover:text-white text-xs font-semibold px-4 py-1.5 rounded-lg transition";
       }
       animatePanel(document.getElementById("view-" + tabName));
@@ -496,7 +512,7 @@
         loadSelectedPreview();
         var publicUrl = safePublicUrl((state[selected.siren] || {}).publishedUrl);
         var previewUrl = "/sites/" + selected.slug + ".html";
-        document.getElementById("iframeUrlLink").innerText = publicUrl || ("Aperçu local · " + previewUrl);
+        document.getElementById("iframeUrlLink").innerText = publicUrl || ("Aper?u local · " + previewUrl);
         document.getElementById("iframeUrlLink").href = publicUrl || previewUrl;
         document.getElementById("btnOpenExt").href = publicUrl || previewUrl;
       }
@@ -514,11 +530,11 @@
     function saveConfig() {
       cfg.pay = document.getElementById("payLinkBase").value.trim();
       localStorage.setItem("cockpit_cfg_456", JSON.stringify(cfg));
-      notify("Paramètres sauvegardés ✓");
+      notify("Param?tres sauvegard?s ?");
     }
 
     function openReporting() {
-      if (!stateReady) return notify("Chargement des données en cours.");
+      if (!stateReady) return notify("Chargement des donn?es en cours.");
       var month = document.getElementById("reportMonth");
       month.value = KynextFinance.monthKey(Date.now());
       var settings = KynextFinance.sanitizeFinanceSettings(cfg.finance);
@@ -549,23 +565,23 @@
       if (!month) return;
       var report = KynextFinance.calculateMonthlyReport(DATA, state, month, cfg.finance);
       var money = function(value) { return new Intl.NumberFormat("fr-FR", { style: "currency", currency: "EUR" }).format(value); };
-      var cards = [["Encaissements",report.receipts],["Remboursements",-report.refunds],["Net avant estimations",report.netReceipts],["Réserve fiscale",-report.taxReserve],["Frais de paiement",-report.paymentFees],["Infrastructure",-report.infrastructureMonthly],["Net estimé",report.estimatedNet]];
+      var cards = [["Encaissements",report.receipts],["Remboursements",-report.refunds],["Net avant estimations",report.netReceipts],["Rserve fiscale",-report.taxReserve],["Frais de paiement",-report.paymentFees],["Infrastructure",-report.infrastructureMonthly],["Net estim?",report.estimatedNet]];
       document.getElementById("reportingKpis").innerHTML = cards.map(function(item){ return "<div class=\"reporting-kpi\"><span>" + escapeHTML(item[0]) + "</span><strong>" + money(item[1]) + "</strong></div>"; }).join("") +
-        "<div class=\"reporting-kpi\"><span>Délai contact → 1er encaissement</span><strong>" + (report.closingDaysAverage === null ? "—" : report.closingDaysAverage + " jours") + "</strong><span>" + report.closingCount + " dossier(s) mesuré(s)</span></div>";
+        "<div class=\"reporting-kpi\"><span>Dlai contact â†’ 1er encaissement</span><strong>" + (report.closingDaysAverage === null ?"?" : report.closingDaysAverage + " jours") + "</strong><span>" + report.closingCount + " dossier(s) mesur?(s)</span></div>";
       var rows = report.events.map(function(event){
-        var label = event.kind === "receipt" ? "Encaissement" : "Remboursement";
-        return "<tr><td>" + new Date(event.recordedAt).toLocaleDateString("fr-FR") + "</td><td>" + escapeHTML(event.name) + "</td><td>" + label + "</td><td>" + money(event.kind === "refund" ? -event.amount : event.amount) + "</td></tr>";
+        var label = event.kind === "receipt?"Encaissement" : "Remboursement";
+        return "<tr><td>" + new Date(event.recordedAt).toLocaleDateString("fr-FR") + "</td><td>" + escapeHTML(event.name) + "</td><td>" + label + "</td><td>" + money(event.kind === "refund?-event.amount : event.amount) + "</td></tr>";
       });
-      document.getElementById("reportingLedger").innerHTML = rows.length ? "<table><thead><tr><th>Date</th><th>Entreprise</th><th>Mouvement</th><th>Montant</th></tr></thead><tbody>" + rows.join("") + "</tbody></table>" : "<p class=\"p-4 text-xs text-zinc-500\">Aucun mouvement journalisé pour ce mois.</p>";
+      document.getElementById("reportingLedger").innerHTML = rows.length ?"<table><thead><tr><th>Date</th><th>Entreprise</th><th>Mouvement</th><th>Montant</th></tr></thead><tbody>" + rows.join("") + "</tbody></table>" : "<p class=\"p-4 text-xs text-zinc-500\">Aucun mouvement journalis?pour ce mois.</p>";
     }
 
     function exportMonthlyAccountingCsv() {
       var month = document.getElementById("reportMonth").value;
       if (!month) return notify("Choisis un mois pour le rapport.");
       var report = KynextFinance.calculateMonthlyReport(DATA, state, month, cfg.finance);
-      var cell = function(value) { var text = String(value == null ? "" : value); if (/^[ \t\r]*[=+@-]/.test(text)) text = String.fromCharCode(39) + text; return "\"" + text.replace(/"/g, "\"\"") + "\""; };
+      var cell = function(value) { var text = String(value == null ?"" : value); if (/^[ \t\r]*[=+@-]/.test(text)) text = String.fromCharCode(39) + text; return "\"" + text.replace(/"/g, "\"\"") + "\""; };
       var rows = [["Date","Entreprise","ID fiche","Type","Montant EUR","Statut CRM"].map(cell).join(";")];
-      report.events.forEach(function(event){ rows.push([cell(new Date(event.recordedAt).toLocaleDateString("fr-FR")),cell(event.name),cell(event.siren),cell(event.kind === "receipt" ? "Encaissement" : "Remboursement"),String(event.kind === "refund" ? -event.amount : event.amount),cell(event.status)].join(";")); });
+      report.events.forEach(function(event){ rows.push([cell(new Date(event.recordedAt).toLocaleDateString("fr-FR")),cell(event.name),cell(event.siren),cell(event.kind === "receipt?"Encaissement" : "Remboursement"),String(event.kind === "refund?-event.amount : event.amount),cell(event.status)].join(";")); });
       var link = document.createElement("a");
       var csvUrl = URL.createObjectURL(new Blob(["\uFEFF" + rows.join("\r\n")], { type: "text/csv;charset=utf-8" }));
       link.href = csvUrl; link.download = "kynext-journal-" + month + ".csv"; link.click(); setTimeout(function(){ URL.revokeObjectURL(csvUrl); }, 1000);
@@ -573,7 +589,7 @@
 
     function saveState() {
       localStorage.setItem("crm_luxury_v3", JSON.stringify(state));
-      var saveStatus = document.getElementById("saveStatus"); saveStatus.textContent = "Enregistré localement"; saveStatus.classList.add("is-saved");
+      var saveStatus = document.getElementById("saveStatus"); saveStatus.textContent = "Enregistr?elocalement"; saveStatus.classList.add("is-saved");
       clearTimeout(window.saveStatusTimer); window.saveStatusTimer = setTimeout(function(){ saveStatus.textContent = ""; saveStatus.classList.remove("is-saved"); }, 2200);
       updateKpis();
       if (!stateReady) return;
@@ -581,16 +597,16 @@
         apiFetch("/api/save-fiche", {
           method: "POST", headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ prospect: selected, state: state })
-        }).then(function(r){ if(!r.ok) throw new Error("Échec de sauvegarde"); saveStatus.title = "Synchronisé avec le serveur local"; }).catch(function(){ notify("Serveur indisponible"); });
+        }).then(function(r){ if(!r.ok) throw new Error("Échec de sauvegarde"); saveStatus.title = "Synchronis?avec le serveur local"; }).catch(function(){ notify("Serveur indisponible"); });
       }
       syncBridgeState();
     }
 
     function paymentBase() { try { var u = new URL(String(cfg.pay || "")); if (u.protocol !== "https:" || !(u.hostname === "paypal.me" || u.hostname.endsWith(".paypal.me")) || u.pathname === "/") return ""; var base = u.href; while (base.endsWith("/")) base = base.slice(0, -1); return base; } catch (e) { return ""; } }
     function toggleIphonePanel() { var panel = document.getElementById("iphonePanel"); panel.classList.toggle("hidden"); if (!panel.classList.contains("hidden")) refreshIphonePair(); }
-    async function refreshIphonePair() { try { var r = await apiFetch("/api/net-info"); if (!r.ok) throw new Error(); var info = await r.json(); var select = document.getElementById("iphoneNetwork"); var previous = select.value; select.innerHTML = (info.nets || []).map(function(n){ return "<option value=\"" + escapeHTML(n.url) + "\">" + escapeHTML(n.label) + "</option>"; }).join(""); if (previous) select.value = previous; var url = select.value || ""; document.getElementById("iphoneUrlText").innerText = url; document.getElementById("iphonePairCode").innerText = info.pairCode || "••••••"; document.getElementById("iphoneStatus").innerText = info.iphoneOnline ? "iPhone connecté" : "En attente de connexion"; document.getElementById("iphoneQr").src = url ? qrDataUrl(url, 180) : ""; } catch (e) { document.getElementById("iphoneStatus").innerText = "Connexion locale indisponible"; } }
-    function copyIphoneUrl() { var text = document.getElementById("iphoneNetwork").value; if (navigator.clipboard) navigator.clipboard.writeText(text).then(function(){ notify("Lien iPhone copié"); }); }
-    function syncBridgeState() { if (!stateReady || !selected || !selected.siren) return; var st = state[selected.siren] || {}; var blocked = isSuppressed(selected); var payload = { siren: String(selected.siren), nom: String(selected.nom || ""), dirigeant: String(selected.dirigeant || ""), metier: String(selected.metier || ""), ville: String(selected.ville || ""), tel: !blocked && selected.telVerified ? String(selected.tel || "") : "", telVerified: !blocked && selected.telVerified === true, telSource: !blocked && selected.telVerified ? String(selected.telSource || "") : "", isMobile: !blocked && selected.isMobile === true, doNotContact: blocked, email: String(selected.email || ""), slug: String(selected.slug || ""), urlPublique: safePublicUrl(st.publishedUrl), statusLabel: STATUS_LABELS[getStatus(selected.siren)] || "À contacter", message: blocked ? "" : (document.getElementById("cpMessage").value || ""), payBase: blocked ? "" : (cfg.pay || ""), price: getTarifActuel(), paymentLinkUrl: blocked ? "" : (st.paymentLinkUrl || ""), actionId: blocked ? 0 : (window.bridgeActionId || 0), actionType: blocked ? "" : (window.bridgeActionType || ""), lastSentAt: Number(st.lastSentAt || 0) }; apiFetch("/api/bridge", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(payload) }).catch(function(){}); }
+    async function refreshIphonePair() { try { var r = await apiFetch("/api/net-info"); if (!r.ok) throw new Error(); var info = await r.json(); var select = document.getElementById("iphoneNetwork"); var previous = select.value; select.innerHTML = (info.nets || []).map(function(n){ return "<option value=\"" + escapeHTML(n.url) + "\">" + escapeHTML(n.label) + "</option>"; }).join(""); if (previous) select.value = previous; var url = select.value || ""; document.getElementById("iphoneUrlText").innerText = url; document.getElementById("iphonePairCode").innerText = info.pairCode || "••••••"; document.getElementById("iphoneStatus").innerText = info.iphoneOnline ?"iPhone connect?" : "En attente de connexion"; document.getElementById("iphoneQr").src = url ?qrDataUrl(url, 180) : ""; } catch (e) { document.getElementById("iphoneStatus").innerText = "Connexion locale indisponible"; } }
+    function copyIphoneUrl() { var text = document.getElementById("iphoneNetwork").value; if (navigator.clipboard) navigator.clipboard.writeText(text).then(function(){ notify("Lien iPhone copi?"); }); }
+    function syncBridgeState() { if (!stateReady || !selected || !selected.siren) return; var st = state[selected.siren] || {}; var blocked = isSuppressed(selected); var payload = { siren: String(selected.siren), nom: String(selected.nom || ""), dirigeant: String(selected.dirigeant || ""), metier: String(selected.metier || ""), ville: String(selected.ville || ""), tel: !blocked && selected.telVerified ?String(selected.tel || "") : "", telVerified: !blocked && selected.telVerified === true, telSource: !blocked && selected.telVerified ?String(selected.telSource || "") : "", isMobile: !blocked && selected.isMobile === true, doNotContact: blocked, email: String(selected.email || ""), slug: String(selected.slug || ""), urlPublique: safePublicUrl(st.publishedUrl), statusLabel: STATUS_LABELS[getStatus(selected.siren)] || "À contacter", message: blocked ?"" : (document.getElementById("cpMessage").value || ""), payBase: blocked ?"" : (cfg.pay || ""), price: getTarifActuel(), paymentLinkUrl: blocked ?"" : (st.paymentLinkUrl || ""), actionId: blocked ?0 : (window.bridgeActionId || 0), actionType: blocked ?"" : (window.bridgeActionType || ""), lastSentAt: Number(st.lastSentAt || 0) }; apiFetch("/api/bridge", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(payload) }).catch(function(){}); }
     async function pollBridgeCommands() { if (!stateReady) return; try { var r = await apiFetch("/api/bridge-poll-pc"); if (!r.ok) return; var cmd = await r.json(); if (!cmd || !cmd.type) return; if (cmd.type === "nav") navProspect(cmd.dir); if (cmd.type === "qualify") { qualifierAppel(cmd.note, cmd.status); if (cmd.autoNext) setTimeout(function(){ navProspect(1); }, 500); } if (cmd.type === "note") { document.getElementById("callNotes").value = cmd.note; saveNotes(); } if (cmd.type === "scenario") { document.getElementById("scenarioSelect").value = cmd.value; choisirScenario(cmd.value); } if (cmd.type === "next_phone") { var at = DATA.findIndex(function(p){ return p.siren === selected.siren; }); for (var i = at + 1; i < DATA.length; i++) if (DATA[i].tel) { selectProspect(DATA[i].siren); break; } } } catch (e) {} }
 
     function updateKpis() {
@@ -613,16 +629,16 @@
       document.getElementById("filterCountAll").textContent = DATA.length;
       document.getElementById("kpiSummary").innerHTML =
         "<span><strong class=\"text-white\">" + DATA.length + "</strong> dossiers</span>" +
-        "<span><strong class=\"text-amber-300\">" + sent + "</strong> contactés</span>" +
+        "<span><strong class=\"text-amber-300\">" + sent + "</strong> contact?s</span>" +
         "<span><strong class=\"text-sky-300\">" + hot + "</strong> chauds</span>" +
-        "<span><strong class=\"text-amber-300\">" + followups + "</strong> à relancer</span>" +
-        "<span>CA estimé* : <strong class=\"text-emerald-400\">" + ca + " €</strong> <span class=\"text-zinc-500\">(*790 € par vente)</span></span>";
+        "<span><strong class=\"text-amber-300\">" + followups + "</strong> ?relancer</span>" +
+        "<span>CA estim?* : <strong class=\"text-emerald-400\">" + ca + " €</strong> <span class=\"text-zinc-500\">(*790 € par vente)</span></span>";
       var segment = document.getElementById("crmSegment");
       if (segment) {
         var counts = { all: DATA.length, todo: 0, followup: 0, hot: 0, closed: 0 };
         DATA.forEach(function(p) { counts[KynextInsights.getSegment(state[p.siren] || {}, Date.now())]++; });
         Array.prototype.forEach.call(segment.options, function(option) {
-          var labels = { all: "Tous les segments", todo: "À contacter", followup: "À relancer (J+3)", hot: "Priorité élevée", closed: "Clôturés" };
+          var labels = { all: "Tous les segments", todo: "À contacter", followup: "À relancer (J+3)", hot: "Priorit? ?lev?e", closed: "Cl?tur?s" };
           option.textContent = labels[option.value] + " (" + counts[option.value] + ")";
         });
       }
@@ -630,6 +646,7 @@
 
     function setFilter(f) {
       currentFilter = f;
+      try { localStorage.setItem("kynext_last_filter", f); } catch (e) {}
       var ids = ["prio", "review", "mobile", "vues", "all"];
       for (var i = 0; i < ids.length; i++) {
         var el = document.getElementById("btn-" + ids[i]);
@@ -641,6 +658,11 @@
     function renderList() {
       var q = document.getElementById("search").value.toLowerCase();
       var segment = document.getElementById("crmSegment").value;
+      try { localStorage.setItem("kynext_crm_segment", segment); } catch (e) {}
+      if (typeof Fuse === "function") {
+        prospectFuse = new Fuse(DATA, { keys: ["nom", "ville", "dept", "metier", "siren", "dirigeant"], threshold: 0.34, ignoreLocation: true });
+      }
+      var fuzzyIds = q && prospectFuse ?new Set(prospectFuse.search(q).map(function(result) { return String(result.item.siren); })) : null;
       filteredList = DATA.filter(function(p) {
         if (currentFilter === "prio" && (p.note || "").indexOf("Site existant") !== -1) return false;
         if (currentFilter === "review" && p.telVerified && p.tel) return false;
@@ -648,7 +670,7 @@
         if (currentFilter === "vues" && getStatus(p.siren) !== "hot") return false;
         var crmState = state[p.siren] || {};
         if (segment !== "all" && KynextInsights.getSegment(crmState, Date.now()) !== segment) return false;
-        return (p.nom + " " + p.ville + " " + p.dept + " " + p.metier).toLowerCase().indexOf(q) !== -1;
+        return !q || (fuzzyIds ?fuzzyIds.has(String(p.siren)) : (p.nom + " " + p.ville + " " + p.dept + " " + p.metier).toLowerCase().indexOf(q) !== -1);
       });
       if (currentFilter === "review") filteredList.sort(function(a,b){ var aa=Number((state[a.siren]||{}).phoneLookupAttempts||0), bb=Number((state[b.siren]||{}).phoneLookupAttempts||0); return aa-bb || String(a.nom||"").localeCompare(String(b.nom||""), "fr"); });
       var items = [];
@@ -659,18 +681,19 @@
         var score = KynextInsights.scoreLead(state[p.siren] || {}, Date.now());
         var isSel = selected && selected.siren === p.siren;
         var dot = "status-" + st;
-        items.push("<div role=\"button\" tabindex=\"0\" onclick=\"selectProspect(" + escapeHTML(JSON.stringify(String(p.siren))) + ")\" onkeydown=\"if(event.key===\'Enter\'||event.key===\' \' ){event.preventDefault();selectProspect(" + escapeHTML(JSON.stringify(String(p.siren))) + ")}\" class=\"prospect-row cursor-pointer px-3.5 py-3 rounded-2xl border transition-all duration-150 " + (isSel ? "is-selected bg-white/[0.07] border-amber-400/50 shadow-lg" : "bg-white/[0.015] border-white/[0.04] hover:bg-white/[0.04]") + "\">" +
+        items.push("<div role=\"button\" tabindex=\"0\" onclick=\"selectProspect(" + escapeHTML(JSON.stringify(String(p.siren))) + ")\" onkeydown=\"if(event.key===\'Enter\'||event.key===\' \' ){event.preventDefault();selectProspect(" + escapeHTML(JSON.stringify(String(p.siren))) + ")}\" class=\"prospect-row cursor-pointer px-3.5 py-3 rounded-2xl border transition-all duration-150 " + (isSel ?"is-selected bg-white/[0.07] border-amber-400/50 shadow-lg" : "bg-white/[0.015] border-white/[0.04] hover:bg-white/[0.04]") + "\">" +
           "<div class=\"flex justify-between items-center gap-2\"><div class=\"flex items-center gap-2.5 truncate\"><span class=\"status-dot " + dot + " h-2 w-2 rounded-full shrink-0\"></span><span class=\"font-bold text-xs text-zinc-100 truncate\">" + escapeHTML(p.nom) + "</span></div>" +
-          "<span class=\"text-[10px] font-bold " + (p.tel ? "text-emerald-400" : "text-zinc-500") + " shrink-0\">" + escapeHTML(p.tel || "Sans N°") + "</span></div>" +
-          "<div class=\"flex justify-between items-center text-[10px] text-zinc-500 mt-1\"><span class=\"truncate\">" + escapeHTML(p.ville) + (p.dept ? " (" + escapeHTML(p.dept) + ")" : "") + " • " + escapeHTML((p.metier || "").split(" ")[0]) + "</span><span class=\"flex items-center gap-2\"><span>" + escapeHTML(STATUS_LABELS[st]) + "</span><strong class=\"text-amber-300\" title=\"Indice CRM indicatif, pas une probabilité\">" + score + "/100</strong></span></div></div>");
+          "<span class=\"text-[10px] font-bold " + (p.tel ?"text-emerald-400" : "text-zinc-500") + " shrink-0\">" + escapeHTML(p.tel || "Sans N°") + "</span></div>" +
+          "<div class=\"flex justify-between items-center text-[10px] text-zinc-500 mt-1\"><span class=\"truncate\">" + escapeHTML(p.ville) + (p.dept ?" (" + escapeHTML(p.dept) + ")" : "") + " • " + escapeHTML((p.metier || "").split(" ")[0]) + "</span><span class=\"flex items-center gap-2\"><span>" + escapeHTML(STATUS_LABELS[st]) + "</span><strong class=\"text-amber-300\" title=\"Indice CRM indicatif, pas une probabilit?\">" + score + "/100</strong></span></div></div>");
       }
-      if (!items.length) items.push("<div class=\"empty-state\"><svg width=\"42\" height=\"42\" viewBox=\"0 0 42 42\" fill=\"none\" aria-hidden=\"true\"><circle cx=\"18\" cy=\"18\" r=\"10\" stroke=\"currentColor\" stroke-width=\"1.5\"/><path d=\"m25 25 8 8M14 18h8m-4-4v8\" stroke=\"currentColor\" stroke-width=\"1.5\" stroke-linecap=\"round\"/></svg><strong>Aucune fiche ici</strong><span>Essayez un autre filtre ou créez une nouvelle fiche pour reprendre la prospection.</span></div>");
+      if (!items.length && DATA.length === 0) items.push("<div class=\"empty-state\"><svg width=\"42\" height=\"42\" viewBox=\"0 0 42 42\" fill=\"none\" aria-hidden=\"true\"><circle cx=\"18\" cy=\"18\" r=\"10\" stroke=\"currentColor\" stroke-width=\"1.5\"/><path d=\"m25 25 8 8M14 18h8m-4-4v8\" stroke=\"currentColor\" stroke-width=\"1.5\" stroke-linecap=\"round\"/></svg><strong>Aucune fiche importée</strong><span>Importez un fichier CSV pour commencer votre prospection.</span><button type=\"button\" onclick=\"openCsvImport()\" class=\"gold-btn rounded-xl px-4 py-2.5 text-xs font-bold mt-2\">Importer un CSV</button></div>");
+      if (!items.length) items.push("<div class=\"empty-state\"><svg width=\"42\" height=\"42\" viewBox=\"0 0 42 42\" fill=\"none\" aria-hidden=\"true\"><circle cx=\"18\" cy=\"18\" r=\"10\" stroke=\"currentColor\" stroke-width=\"1.5\"/><path d=\"m25 25 8 8M14 18h8m-4-4v8\" stroke=\"currentColor\" stroke-width=\"1.5\" stroke-linecap=\"round\"/></svg><strong>Aucune fiche ici</strong><span>Essayez un autre filtre ou cr?ez une nouvelle fiche pour reprendre la prospection.</span></div>");
       document.getElementById("prospectList").innerHTML = items.join("");
       if (!document.getElementById("pipelinePanel").classList.contains("hidden")) renderPipeline();
     }
 
     function navProspect(dir) {
-      var list = filteredList.length ? filteredList : DATA;
+      var list = filteredList.length ?filteredList : DATA;
       var idx = list.findIndex(function(p) { return p.siren === selected.siren; });
       var nextIdx = idx + dir;
       if (nextIdx >= 0 && nextIdx < list.length) selectProspect(list[nextIdx].siren);
@@ -680,17 +703,17 @@
       selected = DATA.find(function(p) { return p.siren === siren; }) || DATA[0];
       if (!selected) return;
       renderList();
-      animatePanel(document.getElementById("view-" + (document.getElementById("view-vente").classList.contains("hidden") ? (document.getElementById("view-maquette").classList.contains("hidden") ? "closing" : "maquette") : "vente")));
+      animatePanel(document.getElementById("view-" + (document.getElementById("view-vente").classList.contains("hidden") ?(document.getElementById("view-maquette").classList.contains("hidden") ?"closing" : "maquette") : "vente")));
       var ini = (selected.nom || "AR").split(/[\s-]+/).filter(Boolean).slice(0, 2).map(function(w){ return w[0]; }).join("").toUpperCase();
       document.getElementById("avatarBox").innerText = ini;
       var nameHash = 0; for (var n = 0; n < selected.nom.length; n++) nameHash = (nameHash * 31 + selected.nom.charCodeAt(n)) | 0;
       var hue = Math.abs(nameHash) % 360;
       document.getElementById("avatarBox").style.backgroundImage = "linear-gradient(145deg, hsla(" + hue + ", 60%, 50%, .22), rgba(52,211,153,.08))";
       document.getElementById("cpNom").innerText = selected.nom;
-      document.getElementById("cpSub").innerText = (selected.dirigeant ? "Dirigeant : " + selected.dirigeant + "   •   " : "") + selected.ville + (selected.dept ? " (" + selected.dept + ")" : "") + "   •   SIREN " + selected.siren;
+      document.getElementById("cpSub").innerText = (selected.dirigeant ?"Dirigeant : " + selected.dirigeant + "   •   " : "") + selected.ville + (selected.dept ?" (" + selected.dept + ")" : "") + "   •   SIREN " + selected.siren;
       document.getElementById("cpMetierBadge").innerText = selected.metier;
       var trade = (selected.metier || "").toLowerCase();
-      var tradeClass = /plomb/.test(trade) ? "trade-plumber" : (/électric|electric/.test(trade) ? "trade-electric" : (/peint/.test(trade) ? "trade-paint" : (/menuis/.test(trade) ? "trade-carpenter" : "trade-default")));
+      var tradeClass = /plomb/.test(trade) ?"trade-plumber" : (/?lectric|electric/.test(trade) ?"trade-electric" : (/peint/.test(trade) ?"trade-paint" : (/menuis/.test(trade) ?"trade-carpenter" : "trade-default")));
       document.getElementById("cpMetierBadge").className = "trade-badge " + tradeClass + " text-[11px] font-semibold px-3 py-1 rounded-full";
       document.getElementById("cpStatus").value = getStatus(selected.siren);
       document.getElementById("publishApproval").checked = Boolean(state[selected.siren] && state[selected.siren].publishApproved);
@@ -701,30 +724,30 @@
       updatePhoneLookupStatus(selected);
       var currentContactState = state[selected.siren] || {};
       document.getElementById("doNotContact").checked = currentContactState.doNotContact === true;
-      document.getElementById("doNotContactStatus").textContent = currentContactState.doNotContact === true ? "Bloqué · " + (currentContactState.doNotContactReason || "aucun motif indiqué") : (currentContactState.doNotContactReleasedAt ? "Retiré de la liste le " + new Date(currentContactState.doNotContactReleasedAt).toLocaleDateString("fr-FR") : "Désactivé");
+      document.getElementById("doNotContactStatus").textContent = currentContactState.doNotContact === true ?"Bloqu?· " + (currentContactState.doNotContactReason || "aucun motif indiqu?") : (currentContactState.doNotContactReleasedAt ?"Retir?de la liste le " + new Date(currentContactState.doNotContactReleasedAt).toLocaleDateString("fr-FR") : "Dsactiv?");
       document.getElementById("editEmail").value = selected.email || "";
-      document.getElementById("callNotes").value = (state[selected.siren] && state[selected.siren].notes) ? state[selected.siren].notes : "";
+      document.getElementById("callNotes").value = (state[selected.siren] && state[selected.siren].notes) ?state[selected.siren].notes : "";
       var paymentState = state[selected.siren] || {};
       document.getElementById("paymentStatus").value = paymentState.paymentStatus || "not_invoiced";
       document.getElementById("paidAmount").value = Number(paymentState.paidAmount || 0);
 
-      var prenom = (selected.dirigeant && selected.dirigeant !== "Dirigeant") ? selected.dirigeant.split(" ")[0] : "";
+      var prenom = (selected.dirigeant && selected.dirigeant !== "Dirigeant") ?selected.dirigeant.split(" ")[0] : "";
       document.getElementById("cpPitch").innerText = KynextPlaybook.buildCallPitch(selected);
 
-      var telClean = isSuppressed(selected) ? "" : (selected.tel || "").replace(/[^0-9+]/g, "");
+      var telClean = isSuppressed(selected) ?"" : (selected.tel || "").replace(/[^0-9+]/g, "");
       var publicUrl = ""; try { var parsedPublicUrl = new URL(selected.urlPublique || ""); if (parsedPublicUrl.protocol === "https:" || parsedPublicUrl.protocol === "http:") publicUrl = parsedPublicUrl.href; } catch (e) {}
       document.getElementById("cpQuickLinks").innerHTML =
-        (publicUrl ? "<a href=\"" + escapeHTML(publicUrl) + "\" target=\"_blank\" rel=\"noopener noreferrer\" class=\"bg-white/[0.06] hover:bg-white/[0.12] border border-white/[0.08] text-zinc-200 text-xs font-semibold px-3.5 py-2.5 rounded-xl transition\">🌐 Voir son site</a>" : "") +
-        (telClean ? "<a href=\"tel:" + escapeHTML(telClean) + "\" title=\"Appeler cette entreprise\" class=\"quick-action bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-extrabold px-4 py-2.5 rounded-xl shadow transition\">📞 Appeler</a>" : "");
+        (publicUrl ?"<a href=\"" + escapeHTML(publicUrl) + "\" target=\"_blank\" rel=\"noopener noreferrer\" class=\"bg-white/[0.06] hover:bg-white/[0.12] border border-white/[0.08] text-zinc-200 text-xs font-semibold px-3.5 py-2.5 rounded-xl transition\">🌐 Voir son site</a>" : "") +
+        (telClean ?"<a href=\"tel:" + escapeHTML(telClean) + "\" title=\"Appeler cette entreprise\" class=\"quick-action bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-extrabold px-4 py-2.5 rounded-xl shadow transition\">ðŸ“ž Appeler</a>" : "");
       var publishStatus = document.getElementById("studioPublishStatus");
       var isApproved = Boolean(state[selected.siren] && state[selected.siren].publishApproved);
       var publishedAt = Number(state[selected.siren] && state[selected.siren].publishedAt || 0);
       var publishedUrl = safePublicUrl(state[selected.siren] && state[selected.siren].publishedUrl);
-      publishStatus.textContent = publishedUrl && publishedAt ? "Publié le " + new Date(publishedAt).toLocaleDateString("fr-FR") : (isApproved ? "Autorisation accordée · publication à confirmer" : "Maquette locale · autorisation requise");
+      publishStatus.textContent = publishedUrl && publishedAt ?"Publi?le " + new Date(publishedAt).toLocaleDateString("fr-FR") : (isApproved ?"Autorisation accord?e · publication ?confirmer" : "Maquette locale · autorisation requise");
       publishStatus.classList.toggle("is-approved", isApproved);
       var publishedLink = document.getElementById("iframeUrlLink");
       publishedLink.href = publishedUrl || ("/sites/" + selected.slug + ".html");
-      publishedLink.textContent = publishedUrl || ("Aperçu local · /sites/" + selected.slug + ".html");
+      publishedLink.textContent = publishedUrl || ("Aper?u local · /sites/" + selected.slug + ".html");
       document.getElementById("btnOpenExt").href = publishedUrl || ("/sites/" + selected.slug + ".html");
       var paymentDraft = state[selected.siren] || {};
       var paymentLinkEl = document.getElementById("paymentLinkDraftLink");
@@ -739,20 +762,21 @@
 
     function choisirScenario(val) {
       var p = selected;
-      var prenom = (p.dirigeant && p.dirigeant !== "Dirigeant") ? " " + p.dirigeant.split(" ")[0] : "";
+      var prenom = (p.dirigeant && p.dirigeant !== "Dirigeant") ?" " + p.dirigeant.split(" ")[0] : "";
       var publishedUrl = safePublicUrl((state[p.siren] || {}).publishedUrl);
-      var siteRef = publishedUrl ? " : " + publishedUrl : "";
-      var askToSee = publishedUrl ? "Souhaitez-vous le consulter ?" : "Souhaitez-vous que je vous présente l’aperçu local ?";
+      var siteRef = publishedUrl ?" : " + publishedUrl : "";
+      var askToSee = publishedUrl ?"Souhaitez-vous le consulter ?" : "Souhaitez-vous que je vous pr?sente l?aper?u local ?";
       var map = {
-        v1: "Bonjour" + prenom + ", je vous contacte car j’ai préparé un aperçu de site pour " + p.nom + siteRef + " — " + askToSee,
-        v2: "Bonjour" + prenom + ", voici un aperçu de site préparé pour " + p.nom + " à " + p.ville + siteRef + " — " + askToSee,
-        v3: "Bonjour" + prenom + ", je vous partage la maquette préparée pour " + p.nom + siteRef + " — Les textes et prestations sont à valider avec vous.",
-        j3: publishedUrl ? "Bonjour" + prenom + ", avez-vous pu jeter un œil à la maquette préparée pour " + p.nom + " (" + publishedUrl + ") ? Je peux adapter les photos et textes selon vos chantiers." : "Bonjour" + prenom + ", je reviens au sujet de l’aperçu préparé pour " + p.nom + ". Souhaitez-vous que je vous le présente ?",
-        j7: "Bonjour" + prenom + ", je reviens vers vous au sujet de la maquette préparée pour " + p.nom + ". Souhaitez-vous la consulter ou préférez-vous que je ne vous relance plus ?",
-        tarif: "Bonjour" + prenom + ", le montant de départ indicatif pour la création du site est de " + getTarifActuel() + " € HT. Le périmètre, les options et le devis final sont à confirmer ensemble.",
-        "2x": "Bonjour" + prenom + ", des modalités de paiement en plusieurs fois peuvent être discutées et précisées dans le devis.",
-        fb: "Bonjour" + prenom + ", cette maquette peut compléter votre présence actuelle sur Facebook ou d’autres canaux, si cela vous est utile.",
-        pj: "Bonjour" + prenom + ", voici un aperçu de site que vous pouvez comparer à vos outils actuels. Les frais et modalités seront précisés dans le devis.",
+        v1: "Bonjour" + prenom + ", je vous contacte car j?i pr?par?un aper?u de site pour " + p.nom + siteRef + ?" + askToSee,
+        v2: "Bonjour" + prenom + ", voici un aper?u de site pr?par?pour " + p.nom + ?" + p.ville + siteRef + ?" + askToSee,
+        v3: "Bonjour" + prenom + ", je vous partage la maquette pr?par?e pour " + p.nom + siteRef + ?Les textes et prestations sont ?valider avec vous.",
+        j3: publishedUrl ?"Bonjour" + prenom + ", avez-vous pu jeter un Å“il ?la maquette pr?par?e pour " + p.nom + " (" + publishedUrl + ") ?Je peux adapter les photos et textes selon vos chantiers." : "Bonjour" + prenom + ", je reviens au sujet de l?aper?u pr?par?pour " + p.nom + ". Souhaitez-vous que je vous le pr?sente ?",
+        j7: "Bonjour" + prenom + ", je reviens vers vous au sujet de la maquette pr?par?e pour " + p.nom + ". Souhaitez-vous la consulter ou pr?frez-vous que je ne vous relance plus ?",
+        j90: KynextPlaybook.buildGentleFollowUp(p),
+        tarif: "Bonjour" + prenom + ", le montant de dpart indicatif pour la cr?ation du site est de " + getTarifActuel() + " € HT. Le prim?tre, les options et le devis final sont ?confirmer ensemble.",
+        "2x": "Bonjour" + prenom + ", des modalit?s de paiement en plusieurs fois peuvent ?tre discut?es et pr?cis?es dans le devis.",
+        fb: "Bonjour" + prenom + ", cette maquette peut compl?ter votre pr?sence actuelle sur Facebook ou d?utres canaux, si cela vous est utile.",
+        pj: "Bonjour" + prenom + ", voici un aper?u de site que vous pouvez comparer ?vos outils actuels. Les frais et modalit?s seront pr?cis?s dans le devis.",
         obj_prix: KynextPlaybook.buildObjectionMessage("budget", p),
         obj_temps: KynextPlaybook.buildObjectionMessage("time", p),
         obj_utilite: KynextPlaybook.buildObjectionMessage("usefulness", p),
@@ -762,39 +786,39 @@
       document.getElementById("cpMessage").value = map[val] || map.v1;
     }
 
-    function normalizePhoneInput(value) { var digits = String(value || "").replace(/\D/g, ""); if (/^0033[1-9]\d{8}$/.test(digits)) digits = "0" + digits.slice(4); else if (/^33[1-9]\d{8}$/.test(digits)) digits = "0" + digits.slice(2); return /^0[1-9]\d{8}$/.test(digits) ? digits.replace(/(\d{2})(?=\d)/g, "$1 ").trim() : ""; }
+    function normalizePhoneInput(value) { var digits = String(value || "").replace(/\D/g, ""); if (/^0033[1-9]\d{8}$/.test(digits)) digits = "0" + digits.slice(4); else if (/^33[1-9]\d{8}$/.test(digits)) digits = "0" + digits.slice(2); return /^0[1-9]\d{8}$/.test(digits) ?digits.replace(/(\d{2})(?=\d)/g, "$1 ").trim() : ""; }
     function securePhoneSource(value) { return KynextCrmPolicy.isSecurePublicEvidenceUrl(value); }
     function isSuppressed(prospect) { return KynextCrmPolicy.isContactSuppressed(prospect && state[prospect.siren]); }
     function updatePhoneEvidence(prospect) { var link = document.getElementById("phoneEvidenceLink"); if (!link || !prospect) return; var source = prospect.telSource || ""; var available = prospect.telVerified && KynextCrmPolicy.isSecurePublicEvidenceUrl(source); link.hidden = !available; if (available) { link.href = source; link.title = source; } else { link.removeAttribute("href"); } }
-    function updatePhoneLookupStatus(prospect) { var el = document.getElementById("phoneLookupStatus"); if (!el || !prospect) return; var current = state[prospect.siren] || {}; var attempts = Number(current.phoneLookupAttempts || 0); var checked = Number(current.phoneLookupCheckedAt || 0); var when = checked ? new Date(checked).toLocaleString("fr-FR", { dateStyle: "short", timeStyle: "short" }) : ""; if (prospect.telVerified && prospect.tel) { var verifiedAt = Number(current.phoneVerifiedAt || 0); el.textContent = "Vérifié · source HTTPS consultable" + (verifiedAt ? " · " + new Date(verifiedAt).toLocaleDateString("fr-FR") : ""); } else if (current.phoneLookupOutcome === "no_match") el.textContent = "Aucun numéro public trouvé · " + attempts + " recherche(s) · " + when; else if (attempts) el.textContent = attempts + " recherche(s) ouverte(s) · dernière le " + when + " · à vérifier"; else el.textContent = "À vérifier · aucune recherche manuelle"; }
-    function recordPhoneLookupAttempt(sourceId) { if (!selected || !selected.siren) return; var current = state[selected.siren] || {}; state[selected.siren] = Object.assign({}, current, { phoneLookupAttempts: Math.min(9999, Number(current.phoneLookupAttempts || 0) + 1), phoneLookupCheckedAt: Date.now(), phoneLookupOutcome: selected.telVerified ? "verified" : "pending", phoneLookupLastSource: String(sourceId || "public_source").replace(/[^a-z0-9_]/g, "").slice(0, 48) }); saveState(); updatePhoneLookupStatus(selected); renderList(); }
-    function markNoPhoneFound() { if (!selected || !selected.siren) return; var current = state[selected.siren] || {}; if (selected.telVerified && selected.tel) return notify("Cette fiche possède déjà un téléphone vérifié."); if (!Number(current.phoneLookupAttempts || 0)) return notify("Ouvre d’abord au moins une source de recherche."); state[selected.siren] = Object.assign({}, current, { phoneLookupOutcome: "no_match", phoneLookupCheckedAt: Number(current.phoneLookupCheckedAt || Date.now()) }); saveState(); updatePhoneLookupStatus(selected); notify("Résultat enregistré : aucun numéro public trouvé."); }
+    function updatePhoneLookupStatus(prospect) { var el = document.getElementById("phoneLookupStatus"); if (!el || !prospect) return; var current = state[prospect.siren] || {}; var attempts = Number(current.phoneLookupAttempts || 0); var checked = Number(current.phoneLookupCheckedAt || 0); var when = checked ?new Date(checked).toLocaleString("fr-FR", { dateStyle: "short", timeStyle: "short" }) : ""; if (prospect.telVerified && prospect.tel) { var verifiedAt = Number(current.phoneVerifiedAt || 0); el.textContent = "Vrifi?· source HTTPS consultable" + (verifiedAt ?" · " + new Date(verifiedAt).toLocaleDateString("fr-FR") : ""); } else if (current.phoneLookupOutcome === "no_match") el.textContent = "Aucun num?ro public trouv?· " + attempts + " recherche(s) · " + when; else if (attempts) el.textContent = attempts + " recherche(s) ouverte(s) · derni?re le " + when + " · ?vrifier"; else el.textContent = "À vrifier · aucune recherche manuelle"; }
+    function recordPhoneLookupAttempt(sourceId) { if (!selected || !selected.siren) return; var current = state[selected.siren] || {}; state[selected.siren] = Object.assign({}, current, { phoneLookupAttempts: Math.min(9999, Number(current.phoneLookupAttempts || 0) + 1), phoneLookupCheckedAt: Date.now(), phoneLookupOutcome: selected.telVerified ?"verified" : "pending", phoneLookupLastSource: String(sourceId || "public_source").replace(/[^a-z0-9_]/g, "").slice(0, 48) }); saveState(); updatePhoneLookupStatus(selected); renderList(); }
+    function markNoPhoneFound() { if (!selected || !selected.siren) return; var current = state[selected.siren] || {}; if (selected.telVerified && selected.tel) return notify("Cette fiche poss?de dj?un tl?phone vrifi?."); if (!Number(current.phoneLookupAttempts || 0)) return notify("Ouvre d?bord au moins une source de recherche."); state[selected.siren] = Object.assign({}, current, { phoneLookupOutcome: "no_match", phoneLookupCheckedAt: Number(current.phoneLookupCheckedAt || Date.now()) }); saveState(); updatePhoneLookupStatus(selected); notify("Rsultat enregistr?: aucun num?ro public trouv?."); }
     function saveContactInfo() {
       var telInput = document.getElementById("editTel").value.trim();
       var tel = normalizePhoneInput(telInput);
       var telSource = document.getElementById("editTelSource").value.trim();
       var telVerified = document.getElementById("editTelVerified").checked;
-      if (telInput && (!tel || !telVerified || !securePhoneSource(telSource))) return notify("Saisis un numéro français valide, son lien HTTPS public et confirme sa vérification.");
+      if (telInput && (!tel || !telVerified || !securePhoneSource(telSource))) return notify("Saisis un num?ro fran?ais valide, son lien HTTPS public et confirme sa vrification.");
       var duplicatePhone = tel && DATA.find(function(p){ return String(p.siren) !== String(selected.siren) && p.telVerified && p.tel && p.tel.replace(/\D/g, "") === tel.replace(/\D/g, ""); });
-      if (duplicatePhone && !confirm("Ce numéro est déjà vérifié pour « " + duplicatePhone.nom + " ». Confirme qu’il est aussi publié comme contact professionnel pour cette fiche.")) return;
+      if (duplicatePhone && !confirm("Ce num?ro est dj?vrifi?pour « " + duplicatePhone.nom + " ». Confirme qu?il est aussi publi?comme contact professionnel pour cette fiche.")) return;
       selected.tel = tel;
       selected.telVerified = Boolean(tel);
-      selected.telSource = tel ? telSource : "";
+      selected.telSource = tel ?telSource : "";
       selected.email = document.getElementById("editEmail").value.trim();
       var currentContactState = state[selected.siren] || {};
-      state[selected.siren] = Object.assign({}, currentContactState, { tel: selected.tel, telVerified: selected.telVerified, telSource: selected.telSource, email: selected.email, phoneLookupOutcome: selected.telVerified ? "verified" : (currentContactState.phoneLookupOutcome === "verified" ? "pending" : currentContactState.phoneLookupOutcome), phoneVerifiedAt: selected.telVerified ? Date.now() : 0 });
+      state[selected.siren] = Object.assign({}, currentContactState, { tel: selected.tel, telVerified: selected.telVerified, telSource: selected.telSource, email: selected.email, phoneLookupOutcome: selected.telVerified ?"verified" : (currentContactState.phoneLookupOutcome === "verified?"pending" : currentContactState.phoneLookupOutcome), phoneVerifiedAt: selected.telVerified ?Date.now() : 0 });
       saveState(); selectProspect(selected.siren);
-      notify("Coordonnées mises à jour ✓");
+      notify("Coordonn?es mises ?jour ?");
     }
 
     function savePaymentInfo() {
-      if (!selected || !selected.siren) return notify("Sélectionne d’abord une fiche.");
+      if (!selected || !selected.siren) return notify("Slectionne d?bord une fiche.");
       state[selected.siren] = Object.assign({}, state[selected.siren] || {}, {
         paymentStatus: document.getElementById("paymentStatus").value,
         paymentUpdatedAt: Date.now()
       });
       saveState();
-      notify("Suivi du règlement enregistré");
+      notify("Suivi du rglement enregistr?");
     }
 
     function toggleDoNotContact() {
@@ -805,32 +829,32 @@
       if (enabled) { next.doNotContact = true; next.doNotContactAt = Date.now(); next.doNotContactReason = (prompt("Motif du retrait de contact (facultatif) :", current.doNotContactReason || "") || "").trim().slice(0, 300); next.doNotContactReleasedAt = 0; }
       else { if (!confirm("Retirer cette entreprise de la liste « Ne plus contacter » ?")) { document.getElementById("doNotContact").checked = true; return; } next.doNotContact = false; next.doNotContactReleasedAt = Date.now(); }
       state[selected.siren] = next; saveState(); selectProspect(selected.siren);
-      notify(enabled ? "Contact bloqué dans la liste de suppression" : "Contact réactivé après confirmation");
+      notify(enabled ?"Contact bloqu?dans la liste de suppression" : "Contact r?ctiv?apr?s confirmation");
     }
 
     async function createPaymentDraft(amount, purpose) {
       if (!selected || !selected.siren || isSuppressed(selected)) throw new Error("Cette fiche est dans la liste « Ne plus contacter ».");
       var result = await apiFetch("/api/payment-link", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ siren: String(selected.siren), amount: amount, purpose: purpose, base: cfg.pay || "" }) });
-      var payload = await result.json(); if (!result.ok || !payload.ok) throw new Error(payload.error || "Création du lien impossible.");
+      var payload = await result.json(); if (!result.ok || !payload.ok) throw new Error(payload.error || "Cr?ation du lien impossible.");
       state[selected.siren] = Object.assign({}, state[selected.siren] || {}, payload.paymentState); saveState(); selectProspect(selected.siren);
       return payload.paymentLinkUrl;
     }
 
     function recordPaymentMovement() {
-      if (!selected || !selected.siren) return notify("Sélectionne d’abord une fiche.");
+      if (!selected || !selected.siren) return notify("Slectionne d?bord une fiche.");
       var amount = Number(document.getElementById("paymentMovementAmount").value);
       var kind = document.getElementById("paymentMovementType").value;
       var current = state[selected.siren] || {};
       var result = KynextFinance.addPaymentMovement(current, kind, amount, Date.now());
       if (!result.ok) {
-        var errors = { invalid_amount: "Montant invalide.", refund_exceeds_balance: "Le remboursement dépasse le solde encaissé.", balance_limit: "Le solde maximal de 1 000 000 € serait dépassé.", journal_full: "Le journal de cette fiche est plein.", invalid_kind: "Type de mouvement invalide." };
+        var errors = { invalid_amount: "Montant invalide.", refund_exceeds_balance: "Le remboursement dpasse le solde encaiss?.", balance_limit: "Le solde maximal de 1 000 000 € serait dpass?.", journal_full: "Le journal de cette fiche est plein.", invalid_kind: "Type de mouvement invalide." };
         return notify(errors[result.error] || "Mouvement impossible.");
       }
       state[selected.siren] = Object.assign({}, current, result.state);
       document.getElementById("paidAmount").value = result.state.paidAmount;
       document.getElementById("paymentMovementAmount").value = "";
       saveState(); renderFinanceReport();
-      notify(kind === "receipt" ? "Encaissement journalisé" : "Remboursement journalisé");
+      notify(kind === "receipt?"Encaissement journalis?" : "Remboursement journalis?");
     }
 
     function togglePublishApproval() {
@@ -838,7 +862,7 @@
       var approved = document.getElementById("publishApproval").checked;
       state[selected.siren] = Object.assign({}, state[selected.siren] || {}, { publishApproved: approved });
       saveState();
-      notify(approved ? "Publication autorisée pour cette fiche" : "Fiche exclue des publications");
+      notify(approved ?"Publication autoris?e pour cette fiche" : "Fiche exclue des publications");
     }
 
     function saveNotes() {
@@ -853,34 +877,34 @@
     function setProspectStatus(siren, nextStatus, announce) {
       if (!["todo", "sent", "hot", "sold", "refused"].includes(nextStatus)) return;
       var current = state[siren] || {}; var now = Date.now();
-      state[siren] = Object.assign({}, current, { status: nextStatus, lastInteractionAt: now, firstContactAt: current.firstContactAt || (current.status !== "sent" && current.status !== "hot" && current.status !== "sold" && nextStatus !== "todo" ? now : 0) });
+      state[siren] = Object.assign({}, current, { status: nextStatus, lastInteractionAt: now, firstContactAt: current.firstContactAt || (current.status !== "sent" && current.status !== "hot" && current.status !== "sold" && nextStatus !== "todo?now : 0) });
       if (selected && String(selected.siren) === String(siren)) document.getElementById("cpStatus").value = nextStatus;
       saveState(); renderList();
-      if (announce) notify("Statut mis à jour ✓");
+      if (announce) notify("Statut mis ?jour ?");
     }
 
     function qualifierAppel(noteAjout, nouveauStatut) {
       var current = state[selected.siren] || {}; var prev = current.notes || ""; var now = Date.now();
       var h = new Date().toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" });
-      state[selected.siren] = Object.assign({}, current, { notes: (prev ? prev + " | " : "") + "[" + h + "] " + noteAjout, status: nouveauStatut, lastSentAt: now, lastInteractionAt: now, firstContactAt: current.firstContactAt || (current.status !== "sent" && current.status !== "hot" && current.status !== "sold" && nouveauStatut !== "todo" ? now : 0) });
+      state[selected.siren] = Object.assign({}, current, { notes: (prev ?prev + " | " : "") + "[" + h + "] " + noteAjout, status: nouveauStatut, lastSentAt: now, lastInteractionAt: now, firstContactAt: current.firstContactAt || (current.status !== "sent" && current.status !== "hot" && current.status !== "sold" && nouveauStatut !== "todo?now : 0) });
       saveState(); selectProspect(selected.siren);
-      notify("Qualifié : " + noteAjout);
+      notify("Qualifi?: " + noteAjout);
     }
 
-    function verifiedMobileIntl() { if (!selected || isSuppressed(selected) || !selected.telVerified || !selected.tel) return ""; var digits = selected.tel.replace(/\D/g, ""); return /^0[67]\d{8}$/.test(digits) ? "33" + digits.slice(1) : ""; }
+    function verifiedMobileIntl() { if (!selected || isSuppressed(selected) || !selected.telVerified || !selected.tel) return ""; var digits = selected.tel.replace(/\D/g, ""); return /^0[67]\d{8}$/.test(digits) ?"33" + digits.slice(1) : ""; }
     function sendCurrentWa() {
-      if (isSuppressed(selected)) return notify("Contact bloqué : aucun brouillon ne peut être préparé.");
-      var intl = verifiedMobileIntl(); if (!intl) return notify("⚠️ WhatsApp exige un mobile professionnel 06/07 vérifié.");
+      if (isSuppressed(selected)) return notify("Contact bloqu?: aucun brouillon ne peut ?tre pr?par?.");
+      var intl = verifiedMobileIntl(); if (!intl) return notify(? WhatsApp exige un mobile professionnel 06/07 vrifi?.");
       var txt = document.getElementById("cpMessage").value;
       window.open("https://wa.me/" + intl + "?text=" + encodeURIComponent(txt), "_blank");
       window.bridgeActionId = Number(window.bridgeActionId || 0) + 1; window.bridgeActionType = "wa"; syncBridgeState();
-      notify("Brouillon WhatsApp ouvert. Marque le contacté après l’envoi.");
+      notify("Brouillon WhatsApp ouvert. Marque le contact?apr?s lenvoi.");
     }
 
     function copyMsg() {
-      if (isSuppressed(selected)) return notify("Contact bloqué : copie du message désactivée.");
+      if (isSuppressed(selected)) return notify("Contact bloqu?: copie du message dsactiv?e.");
       navigator.clipboard.writeText(document.getElementById("cpMessage").value);
-      notify("Message copié ✓");
+      notify("Message copi?");
     }
 
     function chercherNumeroAuto() { autoEnrichPhones(); }
@@ -891,59 +915,59 @@
       var panel = document.getElementById("deepSearchSummary");
       if (!panel || !completeEl || !sourceEl) return;
       var sources = (plan && (plan.searchPlan || plan.sources || []) || []).slice(0, 8);
-      var completeness = plan && plan.completeness ? plan.completeness : {};
+      var completeness = plan && plan.completeness ?plan.completeness : {};
       completeEl.textContent = Number(completeness.present || 0) + "/" + Number(completeness.total || 0) + " champs";
-      sourceEl.innerHTML = sources.length ? sources.map(function(item) {
+      sourceEl.innerHTML = sources.length ?sources.map(function(item) {
         var href = "https://www.google.com/search?q=" + encodeURIComponent(String(item.query || ""));
-        var kind = item.phoneSource === false ? " · identité" : " · téléphone pro";
-        return '<a href="' + escapeHTML(href) + '" target="_blank" rel="noopener noreferrer" onclick="recordPhoneLookupAttempt(' + escapeHTML(JSON.stringify(String(item.id || "public_source"))) + ')" class="inline-flex items-center rounded-lg border border-amber-400/20 bg-amber-500/[0.07] px-2.5 py-1.5 text-[10px] font-semibold text-amber-200 hover:bg-amber-500/15">' + escapeHTML(item.label || item.id || "Source") + escapeHTML(kind) + " ↗</a>";
-      }).join("") : "Aucune source priorisée pour le moment.";
+        var kind = item.phoneSource === false ?" · identit?" : " · tl?phone pro";
+        return '<a href="' + escapeHTML(href) + '" target="_blank" rel="noopener noreferrer" onclick="recordPhoneLookupAttempt(' + escapeHTML(JSON.stringify(String(item.id || "public_source"))) + ')" class="inline-flex items-center rounded-lg border border-amber-400/20 bg-amber-500/[0.07] px-2.5 py-1.5 text-[10px] font-semibold text-amber-200 hover:bg-amber-500/15">' + escapeHTML(item.label || item.id || "Source") + escapeHTML(kind) + " →</a>";
+      }).join("") : "Aucune source prioris?e pour le moment.";
       panel.classList.remove("hidden");
     }
     async function autoEnrichPhones() {
-      if (!selected) return notify("Sélectionne d’abord une fiche.");
+      if (!selected) return notify("Slectionne d?bord une fiche.");
       try {
         var r = await apiFetch("/api/enrich-one", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ siren: selected.siren }) });
         var result = await r.json();
-        if (!r.ok || !result.ok) throw new Error(result.error || "Plan d’enrichissement indisponible");
+        if (!r.ok || !result.ok) throw new Error(result.error || "Plan d?nrichissement indisponible");
         var plan = result.plan || result || {};
         var sourceList = (plan.searchPlan || plan.sources || []);
         var topSources = sourceList.slice(0, 5).map(function(item) { return item.label || item.id || "Source"; }).join(" • ");
         renderDeepSearchSummary(plan);
-        notify((plan.summary || "Plan de recherche prêt.") + (topSources ? " Sources : " + topSources + "." : ""));
+        notify((plan.summary || "Plan de recherche pr?t.") + (topSources ?" Sources : " + topSources + "." : ""));
       } catch (e) {
-        notify("Recherche enrichie indisponible : " + (e.message || "erreur réseau"));
+        notify("Recherche enrichie indisponible : " + (e.message || "erreur rseau"));
       }
     }
 
     async function validateCurrentSite() {
-      if (!selected || !selected.siren) return notify("Sélectionne d’abord une fiche.");
+      if (!selected || !selected.siren) return notify("Slectionne d?bord une fiche.");
       var btn = document.getElementById("btnValidateSite");
-      btn.disabled = true; btn.innerText = "⏳ Vérification...";
+      btn.disabled = true; btn.innerText = "⏳ Vrification...";
       try {
         var r = await apiFetch("/api/validate-site", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ siren: selected.siren }) });
         var result = await r.json();
-        if (!r.ok || !result.ok) return notify("Corrections requises : " + ((result.errors || []).join(", ") || result.error || "validation échouée"));
-        notify("Prévalidation réussie : " + result.checks.length + " contrôles.");
-      } catch (e) { notify("Validation indisponible : " + (e.message || "erreur réseau")); }
-      finally { btn.disabled = false; btn.innerText = "✓ Valider le site"; }
+        if (!r.ok || !result.ok) return notify("Corrections requises : " + ((result.errors || []).join(", ") || result.error || "validation ?chou?e"));
+        notify("Pr?validation r?ssie : " + result.checks.length + " contr?eles.");
+      } catch (e) { notify("Validation indisponible : " + (e.message || "erreur rseau")); }
+      finally { btn.disabled = false; btn.innerText = "? Valider le site"; }
     }
 
     async function publierSurgeDirect() {
       var btn = document.getElementById("btnSurge");
       var approvedCount = DATA.filter(function(p) { return state[p.siren] && state[p.siren].publishApproved === true; }).length;
-      if (!approvedCount) return notify("Aucune fiche n’a été autorisée pour la publication.");
-      if (!confirm("Publier " + approvedCount + " fiche(s) autorisée(s) sur le site public ? Les autres fiches resteront privées.")) return;
+      if (!approvedCount) return notify("Aucune fiche n ? t?utoris?e pour la publication.");
+      if (!confirm("Publier " + approvedCount + " fiche(s) autoris?e(s) sur le site public ?Les autres fiches resteront priv?es.")) return;
       btn.innerText = "⏳ Publication..."; btn.disabled = true;
-      try { var r = await apiFetch("/api/surge", { method: "POST" }); var j = await r.json(); if (!r.ok || !j.ok) throw new Error(j.error || ("HTTP " + r.status)); (j.sites || []).forEach(function(site){ state[site.siren] = Object.assign({}, state[site.siren] || {}, { publishedAt: site.publishedAt, publishedUrl: site.url }); }); saveState(); if (selected && selected.siren) selectProspect(selected.siren); btn.innerText = "✓ Publication terminée"; notify(j.published + " maquettes publiées sur " + j.url); } catch (e) { btn.innerText = "Échec de publication"; notify("Publication impossible : " + (e.message || "erreur réseau")); } finally { btn.disabled = false; }
+      try { var r = await apiFetch("/api/surge", { method: "POST" }); var j = await r.json(); if (!r.ok || !j.ok) throw new Error(j.error || ("HTTP " + r.status)); (j.sites || []).forEach(function(site){ state[site.siren] = Object.assign({}, state[site.siren] || {}, { publishedAt: site.publishedAt, publishedUrl: site.url }); }); saveState(); if (selected && selected.siren) selectProspect(selected.siren); btn.innerText = "? Publication termin?e"; notify(j.published + " maquettes publi?es sur " + j.url); } catch (e) { btn.innerText = "Échec de publication"; notify("Publication impossible : " + (e.message || "erreur rseau")); } finally { btn.disabled = false; }
     }
 
-    async function ouvrirDossierWindows() { try { var r = await apiFetch("/api/open-folder", { method: "POST" }); if (!r.ok) throw new Error(); } catch (e) { notify("Impossible d’ouvrir le dossier du projet."); } }
+    async function ouvrirDossierWindows() { try { var r = await apiFetch("/api/open-folder", { method: "POST" }); if (!r.ok) throw new Error(); } catch (e) { notify("Impossible d?uvrir le dossier du projet."); } }
 
     function lancerRafale() {
       var cibles = DATA.filter(function(p) { return p.tel && !isSuppressed(p) && (p.note || "").indexOf("Site existant") === -1 && getStatus(p.siren) === "todo"; });
-      if (!cibles.length) return notify("⚠️ Aucune cible avec numéro en attente");
-      if (!confirm("Préparer " + cibles.length + " brouillons WhatsApp ? Aucun message ne sera envoyé automatiquement.")) return;
+      if (!cibles.length) return notify(? Aucune cible avec num?ro en attente");
+      if (!confirm("Pr?parer " + cibles.length + " brouillons WhatsApp ?Aucun message ne sera envoy?automatiquement.")) return;
       var idx = 0;
       function next() {
         if (idx >= cibles.length) return;
@@ -955,29 +979,29 @@
       next();
     }
 
-    function getTarifActuel() { return document.getElementById("chkUpsell").checked ? 980 : 790; }
+    function getTarifActuel() { return document.getElementById("chkUpsell").checked ?980 : 790; }
 
     function toggleUpsell() {
       var total = getTarifActuel();
       document.getElementById("btnTotal").innerText = "Total indicatif " + total + " €";
-    document.getElementById("btnHalfPayment").innerText = "2 × " + Math.round(total / 2) + " €";
+    document.getElementById("btnHalfPayment").innerText = "2 ?" + Math.round(total / 2) + " €";
       document.getElementById("btnDevis").innerText = "📄 Imprimer la proposition indicative (" + total + " €)";
     }
 
     async function envoyerLienPaiement(amount, purpose, label) {
-      var intl = verifiedMobileIntl(); if (!intl) return notify(isSuppressed(selected) ? "Contact bloqué : aucun lien ne sera préparé." : "WhatsApp exige un mobile professionnel 06/07 vérifié.");
-      if (!paymentBase()) return notify("Configure un compte PayPal.me valide dans les paramètres.");
-      var popup = window.open("about:blank", "_blank"); if (!popup) return notify("Autorise les fenêtres contextuelles pour préparer le brouillon.");
-      try { var link = await createPaymentDraft(amount, purpose); var msg = "Bonjour, voici le brouillon de lien pour " + label + " (" + amount + " € indicatifs, à confirmer dans le devis) pour " + selected.nom + " : " + link; popup.location.href = "https://wa.me/" + intl + "?text=" + encodeURIComponent(msg); notify("Lien rattaché à la fiche; brouillon WhatsApp prêt."); }
-      catch (error) { popup.close(); notify("Lien non préparé : " + (error.message || "erreur réseau")); }
+      var intl = verifiedMobileIntl(); if (!intl) return notify(isSuppressed(selected) ?"Contact bloqu?: aucun lien ne sera pr?par?." : "WhatsApp exige un mobile professionnel 06/07 vrifi?.");
+      if (!paymentBase()) return notify("Configure un compte PayPal.me valide dans les param?tres.");
+      var popup = window.open("about:blank", "_blank"); if (!popup) return notify("Autorise les fen?tres contextuelles pour pr?parer le brouillon.");
+      try { var link = await createPaymentDraft(amount, purpose); var msg = "Bonjour, voici le brouillon de lien pour " + label + " (" + amount + " € indicatifs, ?confirmer dans le devis) pour " + selected.nom + " : " + link; popup.location.href = "https://wa.me/" + intl + "?text=" + encodeURIComponent(msg); notify("Lien rattach?la fiche; brouillon WhatsApp pr?t."); }
+      catch (error) { popup.close(); notify("Lien non pr?par?: " + (error.message || "erreur rseau")); }
     }
 
     function envoyerLienAcompte() {
-      var amount = Math.round(getTarifActuel() * 0.3); envoyerLienPaiement(amount, "deposit", "l’acompte de 30%");
+      var amount = Math.round(getTarifActuel() * 0.3); envoyerLienPaiement(amount, "deposit", "l?compte de 30%");
     }
 
     function envoyerLien2x() {
-      var half = Math.round(getTarifActuel() / 2); envoyerLienPaiement(half, "installment", "la première échéance");
+      var half = Math.round(getTarifActuel() / 2); envoyerLienPaiement(half, "installment", "la premi?re ?chance");
     }
 
     function envoyerLienTotal() {
@@ -985,8 +1009,8 @@
     }
 
     function envoyerBienvenue() {
-      var intl = verifiedMobileIntl(); if (!intl) return notify("WhatsApp exige un mobile professionnel 06/07 vérifié.");
-      var msg = "Bonjour, pour préparer la suite du projet pour " + selected.nom + ", vous pouvez envoyer les photos, le logo et les horaires souhaités.";
+      var intl = verifiedMobileIntl(); if (!intl) return notify("WhatsApp exige un mobile professionnel 06/07 vrifi?.");
+      var msg = "Bonjour, pour pr?parer la suite du projet pour " + selected.nom + ", vous pouvez envoyer les photos, le logo et les horaires souhait?s.";
       window.open("https://wa.me/" + intl + "?text=" + encodeURIComponent(msg), "_blank");
     }
 
@@ -995,11 +1019,11 @@
       var hasMaint = document.getElementById("chkMaint").checked;
       var w = window.open("", "_blank");
       w.document.write("<!DOCTYPE html><html><head><title>Proposition - " + escapeHTML(selected.nom) + "</title><style>body{font-family:Arial;padding:40px;max-width:800px;margin:auto}table{width:100%;border-collapse:collapse;margin-top:20px}th,td{border:1px solid #ddd;padding:10px;text-align:left}.total{font-size:20px;font-weight:bold;text-align:right;margin-top:20px}</style></head><body>" +
-        "<h1>PROPOSITION COMMERCIALE</h1><p><strong>Date :</strong> " + new Date().toLocaleDateString("fr-FR") + "</p><p><strong>Client :</strong> " + escapeHTML(selected.nom) + " — " + escapeHTML(selected.ville) + "</p>" +
-        "<table><tr><th>Prestation</th><th>Montant HT</th></tr><tr><td>Création Site Vitrine Sur-Mesure Prestige + Simulateur + SEO Local</td><td>790,00 </td></tr>" +
-        (total === 980 ? "<tr><td>Pack Google Maps + Nom de domaine .fr (1 an)</td><td>190,00 </td></tr>" : "") +
-        (hasMaint ? "<tr><td>Maintenance & Hébergement (optionnel)</td><td>29,00 € / mois</td></tr>" : "") +
-        "</table><p class=\"total\">Total indicatif : " + total + ",00 €</p><p>Document de proposition à compléter et à valider avant signature.</p>" +
+        "<h1>PROPOSITION COMMERCIALE</h1><p><strong>Date :</strong> " + new Date().toLocaleDateString("fr-FR") + "</p><p><strong>Client :</strong> " + escapeHTML(selected.nom) + ?" + escapeHTML(selected.ville) + "</p>" +
+        "<table><tr><th>Prestation</th><th>Montant HT</th></tr><tr><td>Cr?ation Site Vitrine Sur-Mesure Prestige + Simulateur + SEO Local</td><td>790,00 </td></tr>" +
+        (total === 980 ?"<tr><td>Pack Google Maps + Nom de domaine .fr (1 an)</td><td>190,00 </td></tr>" : "") +
+        (hasMaint ?"<tr><td>Maintenance & Hbergement (optionnel)</td><td>29,00 € / mois</td></tr>" : "") +
+        "</table><p class=\"total\">Total indicatif : " + total + ",00 €</p><p>Document de proposition compl?ter et ?valider avant signature.</p>" +
         "<scr" + "ipt>window.print();</scr" + "ipt></body></html>");
       w.document.close();
     }
@@ -1019,10 +1043,10 @@
     }
 
     function exporterCSV() {
-      var csvCell = function(v) { var cell = String(v == null ? "" : v); if (/^[ \t\r]*[=+@-]/.test(cell)) cell = String.fromCharCode(39) + cell; return String.fromCharCode(34) + cell.replace(/"/g, String.fromCharCode(34) + String.fromCharCode(34)) + String.fromCharCode(34); }; var rows = [["Score /100", "Nom", "Dirigeant", "Métier", "Ville", "SIREN ou ID fiche", "Téléphone", "E-mail", "Statut CRM", "Statut paiement", "Montant reçu EUR", "Prix indicatif", "URL maquette", "Message", "Notes"].map(csvCell).join(",")].concat(DATA.map(function(p) {
+      var csvCell = function(v) { var cell = String(v == null ?"" : v); if (/^[ \t\r]*[=+@-]/.test(cell)) cell = String.fromCharCode(39) + cell; return String.fromCharCode(34) + cell.replace(/"/g, String.fromCharCode(34) + String.fromCharCode(34)) + String.fromCharCode(34); }; var rows = [["Score /100", "Nom", "Dirigeant", "Mtier", "Ville", "SIREN ou ID fiche", "T?l?phone", "E-mail", "Statut CRM", "Statut paiement", "Montant reu EUR", "Prix indicatif", "URL maquette", "Message", "Notes"].map(csvCell).join(",")].concat(DATA.map(function(p) {
         var paymentState = state[p.siren] || {};
-        var paymentLabels = { not_invoiced: "Non facturé", deposit_requested: "Acompte demandé", deposit_received: "Acompte reçu", balance_requested: "Solde demandé", paid: "Réglé", refunded: "Remboursé" };
-        return [p.score + "/100", p.nom, p.dirigeant, p.metier, p.ville, p.siren, p.tel, p.email, STATUS_LABELS[getStatus(p.siren)], paymentLabels[paymentState.paymentStatus] || "Non facturé", paymentState.paidAmount || 0, "790 € indicatif", p.urlPublique, p.sms, p.note].map(csvCell).join(",");
+        var paymentLabels = { not_invoiced: "Non factur?", deposit_requested: "Acompte demand?", deposit_received: "Acompte reu", balance_requested: "Solde demand?", paid: "Rgl?", refunded: "Rembours?" };
+        return [p.score + "/100", p.nom, p.dirigeant, p.metier, p.ville, p.siren, p.tel, p.email, STATUS_LABELS[getStatus(p.siren)], paymentLabels[paymentState.paymentStatus] || "Non factur?", paymentState.paidAmount || 0, "790 € indicatif", p.urlPublique, p.sms, p.note].map(csvCell).join(",");
       }));
       var a = document.createElement("a");
       a.href = URL.createObjectURL(new Blob(["\uFEFF" + rows.join("\n")], { type: "text/csv" }));
@@ -1034,24 +1058,24 @@
 
     async function importerCSVFile(file) {
       if (!file) return;
-      if (!String(file.name || "").toLowerCase().endsWith(".csv")) return notify("Sélectionne un fichier .csv.");
-      if (file.size > 2 * 1024 * 1024) return notify("Le fichier dépasse la limite de 2 Mo.");
+      if (!String(file.name || "").toLowerCase().endsWith(".csv")) return notify("Slectionne un fichier .csv.");
+      if (file.size > 2 * 1024 * 1024) return notify("Le fichier dpasse la limite de 2 Mo.");
       try {
         var response = await apiFetch("/api/import-csv", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ csv: await file.text() }) });
         var result = await response.json();
-        if (!response.ok || !result.ok) throw new Error(result.error || "Import refusé");
+        if (!response.ok || !result.ok) throw new Error(result.error || "Import refus?");
         var dataResponse = await apiFetch("/api/data");
-        if (!dataResponse.ok) throw new Error("Impossible de recharger les fiches importées");
+        if (!dataResponse.ok) throw new Error("Impossible de recharger les fiches import?es");
         DATA = await dataResponse.json(); updateKpis(); renderList();
-        notify("Import CSV : " + result.added + " ajoutée(s), " + result.merged + " fusionnée(s), " + result.ambiguous.length + " doublon(s) à vérifier, " + result.errors.length + " ligne(s) ignorée(s).");
-      } catch (error) { notify("Import CSV impossible : " + (error.message || "erreur réseau")); }
+        notify("Import CSV : " + result.added + " ajout?e(s), " + result.merged + " fusionn?e(s), " + result.ambiguous.length + " doublon(s) ?vrifier, " + result.errors.length + " ligne(s) ignor?e(s).");
+      } catch (error) { notify("Import CSV impossible : " + (error.message || "erreur rseau")); }
     }
 
     function exporterMobilesVerifies() {
       var verified = DATA.filter(function(p) { return p.telVerified === true && /^0[67]/.test(String(p.tel || "").replace(/\D/g, "")); });
-      if (!verified.length) return notify("Aucun mobile professionnel vérifié à exporter.");
-      var cell = function(value) { var text = String(value == null ? "" : value); if (/^[ \t\r]*[=+@-]/.test(text)) text = String.fromCharCode(39) + text; return String.fromCharCode(34) + text.replace(/"/g, String.fromCharCode(34) + String.fromCharCode(34)) + String.fromCharCode(34); };
-      var rows = [["Nom", "SIREN/SIRET", "Mobile vérifié", "Source HTTPS", "Maquette"].map(cell).join(";")];
+      if (!verified.length) return notify("Aucun mobile professionnel vrifi?exporter.");
+      var cell = function(value) { var text = String(value == null ?"" : value); if (/^[ \t\r]*[=+@-]/.test(text)) text = String.fromCharCode(39) + text; return String.fromCharCode(34) + text.replace(/"/g, String.fromCharCode(34) + String.fromCharCode(34)) + String.fromCharCode(34); };
+      var rows = [["Nom", "SIREN/SIRET", "Mobile vrifi?", "Source HTTPS", "Maquette"].map(cell).join(";")];
       verified.forEach(function(p) { rows.push([cell(p.nom), cell(p.siren), cell(p.tel), cell(p.telSource), cell(safePublicUrl(p.urlPublique))].join(";")); });
       var link = document.createElement("a"); var url = URL.createObjectURL(new Blob(["\uFEFF" + rows.join("\r\n")], { type: "text/csv;charset=utf-8" }));
       link.href = url; link.download = "kynext-mobiles-verifies.csv"; link.click(); setTimeout(function() { URL.revokeObjectURL(url); }, 1000);
@@ -1060,26 +1084,26 @@
     async function ajouterProspectRapide() {
       var nom = prompt("Nom de l'entreprise :");
       if (!nom) return;
-      var telInput = prompt("Téléphone vérifié sur une source publique (laisser vide si inconnu) :", "") || "";
+      var telInput = prompt("T?l?phone vrifi?sur une source publique (laisser vide si inconnu) :", "") || "";
       var tel = normalizePhoneInput(telInput);
-      var telSource = tel ? prompt("Lien HTTPS de la source publique :", "") || "" : "";
-      if (telInput && (!tel || !securePhoneSource(telSource))) return alert("Numéro refusé : saisis un numéro français valide avec son lien HTTPS de vérification.");
-      if (tel && !confirm("Après avoir ouvert cette source, confirmes-tu que ce numéro exact est publié comme téléphone professionnel de cette entreprise ?")) return alert("Fiche non créée. Relance l’ajout et laisse le téléphone vide si tu ne peux pas confirmer ce numéro.");
+      var telSource = tel ?prompt("Lien HTTPS de la source publique :", "") || "" : "";
+      if (telInput && (!tel || !securePhoneSource(telSource))) return alert("Num?ro refus? : saisis un num?ro fran?ais valide avec son lien HTTPS de v?rification.");
+      if (tel && !confirm("Apr?s avoir ouvert cette source, confirmes-tu que ce num?ro exact est publi?comme tl?phone professionnel de cette entreprise ?")) return alert("Fiche non cr?e. Relance l?ajout et laisse le tl?phone vide si tu ne peux pas confirmer ce num?ro.");
       var ville = prompt("Ville :", "Lille");
-      var metier = prompt("Métier :", "Plombier Chauffagiste");
-      var dept = prompt("Département (code réel, optionnel) :", "") || "";
-      var siren = String(prompt("SIREN ou SIRET réel de l’entreprise (9 ou 14 chiffres) :", "") || "").replace(/\D/g, "");
-      if (!/^\d{9}(?:\d{5})?$/.test(siren)) return alert("Saisis le SIREN ou SIRET réel de l’entreprise.");
-      if (DATA.some(function(existing){ return String(existing.siren) === siren; })) return alert("Cette entreprise existe déjà dans le CRM.");
-      if (!ville || !metier) return alert("La ville et le métier sont requis.");
+      var metier = prompt("Mtier :", "Plombier Chauffagiste");
+      var dept = prompt("Dpartement (code r?el, optionnel) :", "") || "";
+      var siren = String(prompt("SIREN ou SIRET r?el de l?entreprise (9 ou 14 chiffres) :", "") || "").replace(/\D/g, "");
+      if (!/^\d{9}(?:\d{5})?$/.test(siren)) return alert("Saisis le SIREN ou SIRET r?el de l?entreprise.");
+      if (DATA.some(function(existing){ return String(existing.siren) === siren; })) return alert("Cette entreprise existe d?j? dans le CRM.");
+      if (!ville || !metier) return alert("La ville et le mtier sont requis.");
       try {
-        var response = await apiFetch("/api/prospect/add", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ siren: siren, nom: nom.trim(), ville: ville.trim(), dept: dept.trim(), metier: metier.trim(), tel: tel, telVerified: Boolean(tel), telSource: tel ? telSource : "", email: "", urlPublique: "", note: "Ajout manuel — maquette locale à valider" }) });
+        var response = await apiFetch("/api/prospect/add", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ siren: siren, nom: nom.trim(), ville: ville.trim(), dept: dept.trim(), metier: metier.trim(), tel: tel, telVerified: Boolean(tel), telSource: tel ?telSource : "", email: "", urlPublique: "", note: "Ajout manuel ?maquette locale ?valider" }) });
         var result = await response.json();
         if (!response.ok || !result.ok) throw new Error(result.error || "Enregistrement impossible");
         DATA.unshift(result.prospect);
         selectProspect(result.prospect.siren); saveState(); updateKpis(); renderList();
-        notify("Fiche ajoutée et enregistrée. La maquette reste locale jusqu’à sa publication autorisée.");
-      } catch (error) { notify("Ajout impossible : " + (error.message || "erreur réseau")); }
+        notify("Fiche ajout?e et enregistr?e. La maquette reste locale jusqu?? sa publication autoris?e.");
+      } catch (error) { notify("Ajout impossible : " + (error.message || "erreur rseau")); }
     }
 
     document.addEventListener("keydown", function(e) {
@@ -1103,6 +1127,9 @@
 
     async function initializeApp() {
       document.getElementById("payLinkBase").value = cfg.pay || "";
+      if (typeof flatpickr === "function") flatpickr("#reportMonth", { dateFormat: "Y-m", allowInput: true, disableMobile: true });
+      var savedSegment = ""; try { savedSegment = localStorage.getItem("kynext_crm_segment") || ""; } catch (e) {}
+      if (["all", "todo", "followup", "hot", "closed"].indexOf(savedSegment) !== -1) document.getElementById("crmSegment").value = savedSegment;
       document.getElementById("maquetteIframe").addEventListener("load", function(){ document.getElementById("previewStage").classList.remove("is-loading"); });
       document.getElementById("prospectList").addEventListener("pointermove", function(event){ var row=event.target.closest(".prospect-row"); if(!row)return; var rect=row.getBoundingClientRect(); row.style.setProperty("--spotlight-x",(event.clientX-rect.left)+"px"); row.style.setProperty("--spotlight-y",(event.clientY-rect.top)+"px"); });
       var csvImportFile = document.getElementById("csvImportFile");
@@ -1113,10 +1140,10 @@
       var pipelineBoard = document.getElementById("pipelineBoard");
       pipelineBoard.addEventListener("dragstart", function(event) { var card = event.target.closest("[data-prospect-id]"); if (!card) return; event.dataTransfer.setData("text/plain", card.dataset.prospectId); event.dataTransfer.effectAllowed = "move"; });
       pipelineBoard.addEventListener("dragover", function(event) { var column = event.target.closest("[data-drop-status]"); if (!column) return; event.preventDefault(); event.dataTransfer.dropEffect = "move"; });
-      pipelineBoard.addEventListener("drop", function(event) { var column = event.target.closest("[data-drop-status]"); if (!column) return; event.preventDefault(); var siren = event.dataTransfer.getData("text/plain"); var status = column.dataset.dropStatus; if (siren && getStatus(siren) !== status) { setProspectStatus(siren, status, false); notify("Statut déplacé vers « " + STATUS_LABELS[status] + " »."); } });
-      try { var dataResponse = await apiFetch("/api/data"); if (!dataResponse.ok) throw new Error("Chargement des dossiers refusé"); DATA = await dataResponse.json(); var stateResponse = await apiFetch("/api/state"); if (stateResponse.ok) { var serverState = await stateResponse.json(); state = Object.assign({}, serverState, state); Object.keys(serverState).forEach(function(key){ if (serverState[key] && serverState[key].doNotContact === true) state[key] = Object.assign({}, state[key] || {}, serverState[key]); }); } }
+      pipelineBoard.addEventListener("drop", function(event) { var column = event.target.closest("[data-drop-status]"); if (!column) return; event.preventDefault(); var siren = event.dataTransfer.getData("text/plain"); var status = column.dataset.dropStatus; if (siren && getStatus(siren) !== status) { setProspectStatus(siren, status, false); notify("Statut dplac?vers « " + STATUS_LABELS[status] + " »."); } });
+      try { var dataResponse = await apiFetch("/api/data"); if (!dataResponse.ok) throw new Error("Chargement des dossiers refus?"); DATA = await dataResponse.json(); var stateResponse = await apiFetch("/api/state"); if (stateResponse.ok) { var serverState = await stateResponse.json(); state = Object.assign({}, serverState, state); Object.keys(serverState).forEach(function(key){ if (serverState[key] && serverState[key].doNotContact === true) state[key] = Object.assign({}, state[key] || {}, serverState[key]); }); } }
       catch (e) { notify("Chargement impossible : " + e.message); return; }
-      Object.keys(state).forEach(function(key){ var entry = state[key] && typeof state[key] === "object" ? state[key] : {}; var savedTel = normalizePhoneInput(entry.tel); var verified = Boolean(savedTel && entry.telVerified === true && securePhoneSource(entry.telSource)); state[key] = Object.assign({}, entry, { tel: verified ? savedTel : "", telVerified: verified, telSource: verified ? entry.telSource : "" }); });
+      Object.keys(state).forEach(function(key){ var entry = state[key] && typeof state[key] === "object?state[key] : {}; var savedTel = normalizePhoneInput(entry.tel); var verified = Boolean(savedTel && entry.telVerified === true && securePhoneSource(entry.telSource)); state[key] = Object.assign({}, entry, { tel: verified ?savedTel : "", telVerified: verified, telSource: verified ?entry.telSource : "" }); });
       DATA.forEach(function(p){ var saved = state[p.siren] || {}; if (saved.telVerified) { p.tel = saved.tel; p.telVerified = true; p.telSource = saved.telSource; } if (saved.email) p.email = saved.email; });
       localStorage.setItem("crm_luxury_v3", JSON.stringify(state));
       stateReady = true; updateKpis(); renderList(); if (DATA.length) selectProspect(DATA[0].siren);
@@ -1126,5 +1153,10 @@
     }
     initializeApp();
   </script>
+
+<script src="/libs/sortable.min.js"></script>
+<script src="/libs/jspdf.umd.min.js"></script>
+<script src="/libs/qrcode.min.js"></script>
+<script src="/libs/confetti.browser.min.js"></script>
 </body>
 </html>
